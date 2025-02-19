@@ -36,3 +36,10 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+.idea/
+.vscode/
+node_modules/
+build/
+tmp/
+temp/
