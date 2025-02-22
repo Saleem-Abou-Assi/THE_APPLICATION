@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import RecoredList from '../src/components/RecoredList';
-import * as SQLite from 'expo-sqlite';
+import RecoredList from '../components/Customer';
 
 
 export default function App() {

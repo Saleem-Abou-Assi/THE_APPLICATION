@@ -3,13 +3,12 @@ import * as SQLite from 'expo-sqlite';
 // Open or create a SQLite database
 const db = SQLite.openDatabaseSync('DataBase.sqlite');
 
-export const createTable = async ()=> {
-  const result = await db.runAsync('CREATE TABLE customers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, line TEXT, balance REAL);')
-  console.log(result);
-} 
+// export const createTable = async ()=> {
+//   const result = await db.runAsync('CREATE TABLE customers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, line TEXT, balance REAL);')
+//   console.log(result);
+// } 
 // Create a new customer record
 export const createRecord = async (name: string, line: string, balance: number) => {
-  createTable();
   const result = await db.runAsync('INSERT INTO customers (name, line, balance) VALUES (?, ?, ?)', name, line, balance);
   console.log(result.lastInsertRowId, result.changes);
   console.log("oooooooooo");
