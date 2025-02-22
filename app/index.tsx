@@ -1,0 +1,70 @@
+import Button from '@/components/Button';
+import React, { useEffect } from 'react';
+import { StyleSheet, View,Text } from 'react-native';
+
+
+export default function App() {
+  
+  return (
+    // <View >
+    //   <Button target='/customer' label='customer' theme='primary'></Button>
+    // </View>
+    <>
+    <View style={styles.container}>  
+                <View style={styles.header}>  
+                    <Text style={styles.headerText}>App Name</Text>  
+                </View>  
+                
+                <View style={styles.box}>  
+                    <Text style={styles.boxText}>الصندوق : 25000</Text>  
+                </View>  
+
+            </View>  
+            <View style={styles.buttonContainer}>  
+                     <Button target='/customer' label='customer' theme='primary'></Button>
+            
+            </View> 
+            </> 
+  );
+}
+const styles = StyleSheet.create({  
+    container: {  
+        flexDirection: 'column',  
+        padding: 16,  
+        alignItems: 'center',  
+        overflowY: 'scroll',  
+    },  
+    header: {  
+        flexDirection: 'row',  
+        height: 128,  
+        justifyContent: 'center',  
+        alignItems: 'center',  
+    },  
+    headerText: {  
+        fontWeight: 'bold',  
+        fontSize: 64, // text-8xl equivalent  
+        color: '#color-primary', // replace with actual color  
+    },  
+    box: {  
+        backgroundColor: '#FCa311',  
+        borderRadius: 8,  
+        width: '70%',  
+        height: 128,  
+        justifyContent: 'center',  
+        alignItems: 'center',  
+    },  
+    boxText: {  
+        color: 'black',  
+        fontSize: 32, // text-4xl equivalent  
+        fontWeight: 'bold',  
+    },  
+    buttonContainer: {  
+        flex: 1,  
+        flexDirection: 'row',  
+        alignItems: 'center',  
+        flexWrap: 'wrap',  
+        justifyContent: 'center',  
+        gap: 20, // Note: React Native doesn't support gap directly, you'll need to add margin or padding  
+        paddingVertical: 16,  
+    },  
+});  

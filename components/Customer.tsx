@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput } from 'react-native';
-import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/cutomers';
-import { Customer } from '../../src/entity/Customers';
+import { getRecords, createRecord, updateRecord, deleteRecord } from '../src/crud/cutomers';
+import { Customer } from '../src/entity/Customers';
 
 const RecoredList: React.FC = () => {
   const [records, setRecords] = useState<Customer[]>([]);
@@ -52,7 +52,7 @@ const RecoredList: React.FC = () => {
 
   return (
     <View>
-      <TextInput placeholder="Name" value={name} onChangeText={setName} />
+      <TextInput placeholder="Namwdade" value={name} onChangeText={setName} />
       <TextInput placeholder="Line" value={line} onChangeText={setLine} />
       <TextInput 
         placeholder="Balance" 

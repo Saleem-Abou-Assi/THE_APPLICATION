@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import RecoredList from '../components/Customer';
+import RecoredList from '../../components/Customer';
+import Button from '@/components/Button';
 
 
 export default function App() {
@@ -8,6 +9,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <RecoredList />
+      
     </View>
   );
 }
