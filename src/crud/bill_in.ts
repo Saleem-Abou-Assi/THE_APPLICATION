@@ -54,7 +54,7 @@ export const createBill = async (billData: {
         // Insert payments
        
         await db.runAsync(
-            'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?)',
+            'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
             [billData.pay, billData.customer_id, billData.bill_in_id, " "]
             );
         }

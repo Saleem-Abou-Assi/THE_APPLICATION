@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput,StyleSheet, TouchableOpacity } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/cutomers';
 import { Customer } from '../../src/entity/Customers';
+import { useRouter } from 'expo-router';
 
 const Customers: React.FC = () => {
   const [records, setRecords] = useState<Customer[]>([]);
@@ -11,6 +12,7 @@ const Customers: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredItems, setFilteredItems] = useState<Customer[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = () => {
@@ -103,6 +105,10 @@ useEffect(() => {
           onPress={() => handleEdit(record)} ><Text>Edit</Text></TouchableOpacity></View>
     <View><TouchableOpacity className='w-fit bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)} >
       <Text className='text-white font-bold'>Delete</Text></TouchableOpacity></View>
+    <View><TouchableOpacity 
+      className='w-fit bg-blue-700 p-2 rounded-sm' 
+      onPress={() => router.push(`/customer/details?id=${record.id}`)} >
+      <Text className='text-white font-bold'>Details</Text></TouchableOpacity></View>
         </View>
       ))}
       </View>
