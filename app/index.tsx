@@ -1,7 +1,7 @@
 import Button from '@/components/Button';
 import React, { useEffect } from 'react';
 import { StyleSheet, View,Text } from 'react-native';
-
+import "../global.css";
 
 export default function App() {
   
@@ -10,7 +10,7 @@ export default function App() {
     //   <Button target='/customer' label='customer' theme='primary'></Button>
     // </View>
     <>
-    <View style={styles.container}>  
+                <View style={styles.container}>  
                 <View style={styles.header}>  
                     <Text style={styles.headerText}>App Name</Text>  
                 </View>  
@@ -22,6 +22,8 @@ export default function App() {
             </View>  
             <View style={styles.buttonContainer}>  
                      <Button target='/customer' label='customer' theme='primary'></Button>
+                     <Button target='/item' label='items' theme='primary'></Button>
+                     <Button target='/traders' label='traders' theme='primary'></Button>
             
             </View> 
             </> 
