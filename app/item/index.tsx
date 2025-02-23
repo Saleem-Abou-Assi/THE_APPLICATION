@@ -56,11 +56,11 @@ const Items: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-      style={{ flex: 1 }}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }} 
+        keyboardShouldPersistTaps='handled'
+      >
         <View className='w-full overflow-y-scroll flex-1 flex-col items-center py-4 '>
           <TextInput 
             className='w-[85%] bg-slate-100 text-center rounded-md mb-4' 
@@ -69,48 +69,59 @@ const Items: React.FC = () => {
             onChangeText={setSearchTerm} 
           />
           <View className='w-[85%] bg-white drop-shadow-lg rounded-lg flex-1 flex-col p-3 max-h-[35%]'>
-            <View className='flex-1 flex-row max-h-14 items-center justify-end'>
-              <TextInput className='w-[80%] bg-slate-100 text-center rounded-md' placeholder="...." value={name} onChangeText={setName} />
-              <Text className='font-bold text-center text-lg'>اسم المنتج:</Text>
+            <View className='flex-1 flex-row max-h-14 min-h-14 items-center justify-end'>
+              <TextInput className='w-[80%] bg-slate-100 text-center rounded-md text-l' placeholder="...." value={name} onChangeText={setName} />
+              <Text className='font-bold text-center text-lg '>اسم المنتج:</Text>
             </View>
-            <View className='flex-1 flex-row max-h-14 items-center justify-end '>
-            <TextInput className='w-[80%] bg-slate-100 text-center rounded-md' placeholder="مبيع" value={String(b_price)} onChangeText={text => setBPrice(Number(text))} keyboardType="numeric" />
+            <View className='flex-1 flex-row max-h-14  min-h-14 items-center justify-end '>
+            <TextInput className='w-[80%] bg-slate-100 text-center rounded-md text-lg' placeholder="مبيع" value={String(b_price)} onChangeText={text => setBPrice(Number(text))} keyboardType="numeric" />
             <Text className='font-bold text-center text-lg w-20'>سعر المبيع: </Text>
             </View>
-            <View className='flex-1 flex-row max-h-14 items-center justify-end' >
-             <TextInput className='w-[80%] bg-slate-100 text-center rounded-md' placeholder="شراء" value={String(s_price)} onChangeText={text => setSPrice(Number(text))} keyboardType="numeric" />
+            <View className='flex-1 flex-row max-h-14  min-h-14 items-center justify-end' >
+             <TextInput className='w-[80%] bg-slate-100 text-center rounded-md text-lg' placeholder="شراء" value={String(s_price)} onChangeText={text => setSPrice(Number(text))} keyboardType="numeric" />
              <Text className='font-bold text-center text-lg w-20'>سعرالشراء: </Text>
             </View>
-            <View className='flex-1 flex-row max-h-14 items-center justify-end'>
-              <TextInput className='w-[80%] bg-slate-100 text-center rounded-md' placeholder="الكمية" value={String(quantity)} onChangeText={text => setQuantity(Number(text))} keyboardType="numeric" />
+            <View className='flex-1 flex-row max-h-14 min-h-14 items-center justify-end'>
+              <TextInput className='w-[80%] bg-slate-100 text-center rounded-md text-lg' placeholder="الكمية" value={String(quantity)} onChangeText={text => setQuantity(Number(text))} keyboardType="numeric" />
               <Text className='font-bold text-center text-lg w-20'>الكمية: </Text>
             </View>
                    <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
           </View>
-          {records.filter(record => record.name.includes(searchTerm)).map((record) => (
-            <View className='flex-1 flex-col w-[85%] m-2 bg-white'>
-            <View key={record.id} className='flex-1 flex-row gap-x-8 items-center justify-center max-h-9 my-2 '>
-              
-              <View className='w-[10%] items-start'><Text>{record.name}</Text></View>
-              <View className='w-[10%] items-start'><Text>{record.b_price}</Text></View>
-              <View className='w-[10%] items-start'><Text>{record.s_price}</Text></View>
-              <View className='w-[10dwd%] items-start'><Text>{record.quantity}</Text></View>
-              <View>
-                <TouchableOpacity 
-                  className='w-fit p-2 bg-[#FCa311] rounded-sm cursor-pointer'
-                  onPress={() => handleEdit(record)} >
-                  <Text>Edit</Text>
-                </TouchableOpacity>
+          <View className='flex-1 flex-col w-[85%] m-2 bg-white overflow-y-scroll h-16 '>
+            <View className='flex-1 flex-row max-h-8 items-end justify-center'>
+            <View className='w-[15%] items-start pl-1'><Text className='font-bold text-lg'>اسم المادة</Text></View>
+            <View className='w-[15%] items-start'><Text className='font-bold text-lg'>سعر المبيع</Text></View>
+            <View className='w-[15%] items-center'><Text className='font-bold text-lg'>سعر الشراء</Text></View>
+            <View className='w-[15%] items-center'><Text className='font-bold text-lg'>الكمية</Text></View>
+            <View className='w-[35%] items-center'><Text className='font-bold text-lg'>تفاعل</Text></View>
+            
+          </View>
+          <View className='h-0.5 bg-gray-500 w-full'></View>
+            {records.filter(record => record.name.includes(searchTerm)).map((record) => (
+             
+              <View key={record.id} className='flex-1 flex-row gap-x-7 items-center justify-center max-h-9  min-h-9 my-2 fixed'>
+                
+                <View className='w-[15%] items-center'><Text>{record.name}</Text></View>
+                <View className='w-[8%] items-start'><Text>{record.b_price}</Text></View>
+                <View className='w-[8%] items-start'><Text>{record.s_price}</Text></View>
+                <View className='w-[8%] items-start'><Text>{record.quantity}</Text></View>
+                <View>
+                  <TouchableOpacity 
+                    className='w-fit p-2 bg-[#FCa311] rounded-sm cursor-pointer'
+                    onPress={() => handleEdit(record)} >
+                    <Text>Edit</Text>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity className='w-fit bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)} >
+                    <Text className='text-white font-bold'>Delete</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View>
-                <TouchableOpacity className='w-fit bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)} >
-                  <Text className='text-white font-bold'>Delete</Text>
-                </TouchableOpacity>
-              </View>
+            ))}
             </View>
-            </View>
-          ))}
-        </View>
+          </View>
+        
       </ScrollView>
     </KeyboardAvoidingView>
   );
