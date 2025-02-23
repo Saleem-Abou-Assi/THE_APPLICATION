@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput } from 'react-native';
-import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/items';
-import { Item } from '../../src/entity/Items'; // Assuming you have an Item entity similar to Customer
+import { getRecords, createRecord, updateRecord, deleteRecord } from '../src/crud/items';
+import { Item } from '../src/entity/Items'; // Assuming you have an Item entity similar to Customer
 
 const Items: React.FC = () => {
   const [records, setRecords] = useState<Item[]>([]);
