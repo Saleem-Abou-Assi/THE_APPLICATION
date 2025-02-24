@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Button, TextInput } from 'react-native-paper';
 import { initBill, createBill } from '../../src/crud/bill_in';
 import { Customer } from '@/src/entity/Customers';
 import { Item } from '@/src/entity/Items';
+import { useRouter } from 'expo-router';
+import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 interface BillItem {
     itemId: number;
@@ -31,6 +33,34 @@ const BillInPage = () => {
     const [selectedCustomerId, setSelectedCustomerId] = useState<number>(0);
     const [selectedItems, setSelectedItems] = useState<BillItem[]>([]);
     const [payment, setPayment] = useState<number>(0);
+
+    // New state for search query
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    // Filtered customers based on search query
+    const filteredCustomers = customers.filter(customer =>
+        customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // New state for modal visibility
+    const [modalVisible, setModalVisible] = useState(false);
+
+    // New state for selected customer
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+
+    // Create a ref for the TextInput
+    const searchInputRef = useRef<TextInput>(null);
+
+    // New state for item selection modal visibility
+    const [itemModalVisible, setItemModalVisible] = useState(false);
+    const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+
+    // Effect to focus on the TextInput when the modal opens
+    useEffect(() => {
+        if (modalVisible) {
+            searchInputRef.current?.focus();
+        }
+    }, [modalVisible]);
 
     // Initialize bill data
     useEffect(() => {
@@ -107,115 +137,167 @@ const BillInPage = () => {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Create Invoice</Text>
-
-            <Picker
-                selectedValue={selectedCustomerId}
-                onValueChange={(value) => setSelectedCustomerId(Number(value))}
-            >
-                <Picker.Item label="Select Customer" value={0} />
-                {customers.map(customer => (
-                    <Picker.Item 
-                        key={customer.id} 
-                        label={customer.name} 
-                        value={customer.id} 
-                    />
-                ))}
-            </Picker>
-
-            <Button mode="contained" onPress={addItemToBill} style={styles.button}>
-                Add Item
-            </Button>
-
-            {selectedItems.map((item, index) => (
-                <View key={index} style={styles.itemRow}>
-                    <Picker
-                        selectedValue={item.itemId}
-                        onValueChange={(value) => updateItem(index, 'itemId', Number(value))}
-                        style={styles.itemPicker}
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={100}
+        >
+            <View className='flex-1 w-[100%] items-center'>
+                <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
+                    <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
+                    <View className='w-full flex flex-row gap-x-2 justify-center'>
+                    <TouchableOpacity
+                        className='bg-primary p-2 rounded-md mb-4 w-36 items-center felx flex-row justify-center'
+                        onPress={() => setModalVisible(true)}
                     >
-                        <Picker.Item label="Select Item" value={0} />
-                        {items.map(item => (
-                            <Picker.Item 
-                                key={item.id} 
-                                label={item.name} 
-                                value={item.id} 
+                        <Text className='text-white font-bold'>{selectedCustomer ? selectedCustomer.name : "العميل"}</Text>
+                        <Text style={{ marginLeft: 5,color:'white' }}>▼</Text>
+                    </TouchableOpacity>
+                    <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>{selectedCustomer ? selectedCustomer.line :"الخط"}</Text>
+                    
+                    </View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                    >
+                        <View className='flex-1 justify-center'>
+                            <View className='bg-white rounded-t-lg p-4 shadow-lg'>
+                                <TextInput
+                                    ref={searchInputRef}
+                                    className="bg-gray-200 p-2 rounded-md mb-4"
+                                    placeholder="Search Customer"
+                                    value={searchQuery}
+                                    onChangeText={setSearchQuery}
+                                />
+
+                                <ScrollView>
+                                    {filteredCustomers.map(customer => (
+                                        <TouchableOpacity
+                                            key={customer.id}
+                                            onPress={() => {
+                                                setSelectedCustomer(customer);
+                                                setSelectedCustomerId(customer.id);
+                                                setModalVisible(false);
+                                            }}
+                                        >
+                                            <Text className='p-4'>{customer.name}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(false)}
+                                    className='mt-4 bg-red-500 p-2 rounded-md'
+                                >
+                                    <Text className='text-white text-center'>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <TouchableOpacity
+                        className='w-32 self-center bg-[#FCa311] p-2 rounded-md mb-4'
+                        onPress={addItemToBill}
+                    >
+                        <Text className='text-center font-bold'>Add Item</Text>
+                    </TouchableOpacity>
+
+                    {selectedItems.map((item, index) => (
+                        <View key={index} className='flex-row items-center gap-2 mb-4'>
+                            <View className='flex-1'>
+                                <TouchableOpacity
+                                    className='bg-gray-200 p-2 rounded-md'
+                                    onPress={() => {
+                                        setSelectedItemIndex(index);
+                                        setItemModalVisible(true);
+                                    }}
+                                >
+                                    <Text>{item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}</Text>
+                                </TouchableOpacity>
+                                
+                            </View>
+
+                            <TextInput
+                                className="bg-gray-200 p-2 rounded-md flex-1"
+                                keyboardType="numeric"
+                                value={item.quantity.toString()}
+                                onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
+                                placeholder="Qty"
                             />
-                        ))}
-                    </Picker>
+
+                            <TextInput
+                                className="bg-gray-200 p-2 rounded-md flex-1"
+                                keyboardType="numeric"
+                                value={item.price.toString()}
+                                onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                placeholder="Price"
+                            />
+
+                            <TouchableOpacity
+                                className='bg-red-500 p-2 rounded-md'
+                                onPress={() => removeItem(index)}
+                            >
+                                <Text className='text-white'>Remove</Text>
+                            </TouchableOpacity>
+                            
+                        </View>
+                    ))}
 
                     <TextInput
+                        className="bg-gray-200 p-2 rounded-md mb-4"
+                        placeholder="Payment"
                         keyboardType="numeric"
-                        value={item.quantity.toString()}
-                        onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
-                        style={styles.input}
-                        label="Qty"
+                        value={payment.toString()}
+                        onChangeText={(value) => setPayment(Number(value))}
                     />
 
-                    <TextInput
-                        keyboardType="numeric"
-                        value={item.price.toString()}
-                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                        style={styles.input}
-                        label="Price"
-                    />
-
-                    <Button onPress={() => removeItem(index)}>Remove</Button>
+                    <TouchableOpacity
+                        className='w-full bg-blue-500 p-2 rounded-md'
+                        onPress={handleSubmit}
+                        disabled={!selectedCustomerId || selectedItems.length === 0}
+                    >
+                        <Text className='text-center text-white font-bold'>Create Bill</Text>
+                    </TouchableOpacity>
                 </View>
-            ))}
+            </View>
 
-            <TextInput
-                label="Payment"
-                keyboardType="numeric"
-                value={payment.toString()}
-                onChangeText={(value) => setPayment(Number(value))}
-                style={styles.paymentInput}
-            />
-
-            <Button 
-                mode="contained" 
-                onPress={handleSubmit}
-                disabled={!selectedCustomerId || selectedItems.length === 0}
-                style={styles.submitButton}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={itemModalVisible}
+                onRequestClose={() => setItemModalVisible(false)}
             >
-                Create Bill
-            </Button>
-        </ScrollView>
+                <View className='flex-1 justify-center'>
+                    <View className='bg-white rounded-t-lg p-4 shadow-lg'>
+                        <ScrollView>
+                            {items.map(item => (
+                                <TouchableOpacity
+                                    key={item.id}
+                                    onPress={() => {
+                                        if (selectedItemIndex !== null) {
+                                            updateItem(selectedItemIndex, 'itemId', item.id);
+                                        }
+                                        setItemModalVisible(false);
+                                    }}
+                                >
+                                    <Text className='p-4'>{item.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+
+                        <TouchableOpacity
+                            onPress={() => setItemModalVisible(false)}
+                            className='mt-4 bg-red-500 p-2 rounded-md'
+                        >
+                            <Text className='text-white text-center'>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        </KeyboardAvoidingView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    itemRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    itemPicker: {
-        flex: 2,
-    },
-    input: {
-        flex: 1,
-        marginHorizontal: 5,
-    },
-    button: {
-        marginVertical: 10,
-    },
-    paymentInput: {
-        marginVertical: 10,
-    },
-    submitButton: {
-        marginVertical: 20,
-    },
-});
 
 export default BillInPage;

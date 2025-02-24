@@ -56,15 +56,12 @@ const Items: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : "position"}
       keyboardVerticalOffset={100}>
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }} 
-        keyboardShouldPersistTaps='handled'
-      >
-        <View className='w-full overflow-y-scroll flex-1 flex-col items-center py-4 '>
+      
+        <View className='flex-1 flex-col w-[100%] items-center absolute'>
         
-          <View className='w-[95%] bg-white drop-shadow-lg rounded-lg flex-1 flex-col p-3 max-h-[38%]'>
+          <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit my-5 '>
                <View className='flex-1 flex-row max-h-14 min-h-14 items-center justify-end'>
                  <TextInput className='w-[80%] bg-slate-100 text-center rounded-md text-l' placeholder="...." value={name} onChangeText={setName} />
                  <Text className='font-bold text-center text-lg '>اسم المنتج:</Text>
@@ -85,13 +82,16 @@ const Items: React.FC = () => {
                    <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
                </View>
             </View>
-          <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit my-2'>
+        
+          <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit my-5 '>
+             <View className=''>
               <TextInput 
             className='w-[100%]  text-center rounded-md mb-4 h-12' 
             placeholder="Search..." 
             value={searchTerm} 
             onChangeText={setSearchTerm} 
           />
+          </View>
             <View className='flex-1 flex-row max-h-8 items-end justify-center'>
             <View className='w-[15%] items-start pl-1'><Text className='font-bold text-lg'> المادة</Text></View>
             <View className='w-[15%] items-start'><Text className='font-bold text-lg'> المبيع</Text></View>
@@ -126,7 +126,7 @@ const Items: React.FC = () => {
             </View>
           </View>
         
-      </ScrollView>
+      
     </KeyboardAvoidingView>
   );
 };
