@@ -107,7 +107,7 @@ useEffect(() => {
       <Text className='text-white font-bold'>Delete</Text></TouchableOpacity></View>
     <View><TouchableOpacity 
       className='w-fit bg-blue-700 p-2 rounded-sm' 
-      onPress={() => router.push(`/customer/details?id=${record.id}`)} >
+      onPress={() => router.push('/customer/details?id=${record.id}')} >
       <Text className='text-white font-bold'>Details</Text></TouchableOpacity></View>
         </View>
       ))}

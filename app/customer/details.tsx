@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { getCustomerDetails } from '../../src/crud/cutomers';
-import { useRouter } from 'next/router';
 
 interface CustomerDetailsProps {
   customerId: number;
 }
 
 export default function CustomerDetails() {
-  const router = useRouter();
-  const { id } = router.query;
-  const customerId = Number(id);
 
   const [customerData, setCustomerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
