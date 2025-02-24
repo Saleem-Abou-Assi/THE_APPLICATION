@@ -24,7 +24,8 @@ export default function App() {
                      <Button target='/customer' label='customer' theme='primary'></Button>
                      <Button target='/item' label='items' theme='primary'></Button>
                      <Button target='/traders' label='traders' theme='primary'></Button>
-            
+                     <Button target='/bill_in' label='مبيع' theme='primary'></Button>
+
             </View> 
             </> 
   );

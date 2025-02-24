@@ -11,6 +11,8 @@ export const runMigrations = async () => {
     await db.execAsync(`  
       PRAGMA journal_mode = WAL;  
 
+      
+
       CREATE TABLE IF NOT EXISTS items (  
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,  
         name TEXT NOT NULL,  
@@ -67,7 +69,7 @@ export const runMigrations = async () => {
         amount REAL NOT NULL,  
         customer_id INTEGER,  
         bill_in_id INTEGER,  
-        note TEXT NOT NULL,  
+        note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
@@ -79,7 +81,7 @@ export const runMigrations = async () => {
         amount REAL NOT NULL,  
         trader_id INTEGER,  
         bill_out_id INTEGER,  
-        note TEXT NOT NULL,  
+        note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         FOREIGN KEY (trader_id) REFERENCES traders (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
@@ -90,8 +92,9 @@ export const runMigrations = async () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,  
         item_id INTEGER,  
         bill_in_id INTEGER,  
-        price REAL NOT NULL,  
-        note TEXT NOT NULL,  
+        price REAL NOT NULL,
+        quantity INTEGER NOT NULL,  
+        note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
@@ -102,8 +105,9 @@ export const runMigrations = async () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,  
         item_id INTEGER,  
         bill_out_id INTEGER,  
-        price REAL NOT NULL,  
-        note TEXT NOT NULL,  
+        price REAL NOT NULL, 
+        quantity INTEGER NOT NULL, 
+        note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
