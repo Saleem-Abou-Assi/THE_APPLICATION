@@ -60,12 +60,16 @@ export const getCustomerDetails = async (customerId: number) => {
     }
 
     const billsWithItems = await Promise.all((bills as Bill_in[]).map(async (bill: Bill_in) => {
-      const items = await db.getAllAsync('SELECT item_id, quantity, price FROM item_bill_in WHERE bill_in_id = ?', bill.id);
-      console.log(items);
-      const itemDetails = await Promise.all((items as BillItem[]).map(async (item: BillItem) => {
-        const itemInfo = await db.getFirstAsync('SELECT * FROM items WHERE id = ?', item.item_id);
-        return itemInfo ? { ...item, ...itemInfo } : item;
-        
+      // Get all item_bill_in records for this bill
+      const itemBillRecords = await db.getAllAsync('SELECT * FROM item_bill_in WHERE bill_in_id = ?', bill.id);
+      
+      // Get item details for each item in item_bill_in
+      const itemDetails = await Promise.all(itemBillRecords.map(async (itemBill: any) => {
+        const itemInfo = await db.getFirstAsync('SELECT * FROM items WHERE id = ?', itemBill.item_id);
+        return {
+          ...(itemBill || {}),  // Fallback to empty object if undefined
+          ...(itemInfo || {})   // Fallback to empty object if undefined
+        };
       }));
       
       return { ...bill, items: itemDetails };
@@ -74,11 +78,13 @@ export const getCustomerDetails = async (customerId: number) => {
     console.log(billsWithItems);
     // Get all payments made by the customer
     const payments = await db.getAllAsync('SELECT * FROM income WHERE customer_id = ?', customerId);
- 
+
+
     return {
       customer,
       bills: billsWithItems,
       payments,
+      
       totalBills: billsWithItems.length,
       totalPayments: payments.length
     };

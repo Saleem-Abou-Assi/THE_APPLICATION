@@ -49,7 +49,7 @@ export const runMigrations = async () => {
         new_balance REAL NOT NULL,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
 
       CREATE TABLE IF NOT EXISTS bills_out (  
@@ -61,7 +61,7 @@ export const runMigrations = async () => {
         new_balance REAL NOT NULL,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (trader_id) REFERENCES traders (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (trader_id) REFERENCES traders (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
 
       CREATE TABLE IF NOT EXISTS income (  
@@ -72,8 +72,8 @@ export const runMigrations = async () => {
         note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
-        FOREIGN KEY (bill_in_id) REFERENCES bills_in (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE CASCADE ON UPDATE CASCADE,  
+        FOREIGN KEY (bill_in_id) REFERENCES bills_in (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
 
       CREATE TABLE IF NOT EXISTS payment (  
@@ -84,8 +84,8 @@ export const runMigrations = async () => {
         note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (trader_id) REFERENCES traders (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
-        FOREIGN KEY (bill_out_id) REFERENCES bills_out (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (trader_id) REFERENCES traders (id) ON DELETE CASCADE ON UPDATE CASCADE,  
+        FOREIGN KEY (bill_out_id) REFERENCES bills_out (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
 
       CREATE TABLE IF NOT EXISTS item_bill_in (  
@@ -97,8 +97,8 @@ export const runMigrations = async () => {
         note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
-        FOREIGN KEY (bill_in_id) REFERENCES bills_in (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE ON UPDATE CASCADE,  
+        FOREIGN KEY (bill_in_id) REFERENCES bills_in (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
 
       CREATE TABLE IF NOT EXISTS item_bill_out (  
@@ -110,8 +110,8 @@ export const runMigrations = async () => {
         note TEXT ,  
         created_at DATETIME NOT NULL DEFAULT (datetime('now')),  
         updated_at DATETIME NOT NULL DEFAULT (datetime('now')),  
-        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE NO ACTION ON UPDATE NO ACTION,  
-        FOREIGN KEY (bill_out_id) REFERENCES bills_out (id) ON DELETE NO ACTION ON UPDATE NO ACTION  
+        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE ON UPDATE CASCADE,  
+        FOREIGN KEY (bill_out_id) REFERENCES bills_out (id) ON DELETE CASCADE ON UPDATE CASCADE  
       );  
     `);  
 
