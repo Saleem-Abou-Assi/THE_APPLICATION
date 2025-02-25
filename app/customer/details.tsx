@@ -65,7 +65,7 @@ export default function CustomerDetails() {
               </View>
             ))}
           </View>
-        ))}
+        ))} 
       </View>
 
       <View style={styles.section}>
