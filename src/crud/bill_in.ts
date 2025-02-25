@@ -45,9 +45,10 @@ export const createBill = async (billData: {
 
         // Insert bill items
         for (const item of billData.items_array) {
+            
             await db.runAsync(
                 'INSERT INTO item_bill_in (item_id, bill_in_id, price, quantity, note) VALUES (?, ?, ?, ?, ?)',
-                [ item.id, billData.bill_in_id,item.price, item.quantity, item.note]
+                [ item.itemId, billData.bill_in_id,item.price, item.quantity, item.note]
             );
         }
 

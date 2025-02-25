@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { getCustomerDetails } from '../../src/crud/cutomers';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
-interface CustomerDetailsProps {
-  customerId: number;
-}
+export default function CustomerDetails() {
+  const { customerId } = useLocalSearchParams();
+  
 
-export default function CustomerDetails({ customerId }: CustomerDetailsProps) {
   const [customerData, setCustomerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +46,8 @@ export default function CustomerDetails({ customerId }: CustomerDetailsProps) {
         <Text>Name: {customerData.customer.name}</Text>
         <Text>Line: {customerData.customer.line}</Text>
         <Text>Balance: {customerData.customer.balance}</Text>
+        <Text>Total Bills: {customerData.totalBills}</Text>
+        <Text>Total Payments: {customerData.totalPayments}</Text>
       </View>
 
       <View style={styles.section}>
@@ -59,7 +60,7 @@ export default function CustomerDetails({ customerId }: CustomerDetailsProps) {
             <Text>New Balance: {bill.new_balance}</Text>
             <Text>Items:</Text>
             {bill.items.map((item: any) => (
-              <View key={item.id} style={styles.itemContainer}>
+              <View key={item.item_id} style={styles.itemContainer}>
                 <Text>{item.name} - {item.quantity} x {item.price}</Text>
               </View>
             ))}
@@ -72,7 +73,7 @@ export default function CustomerDetails({ customerId }: CustomerDetailsProps) {
         {customerData.payments.map((payment: any) => (
           <View key={payment.id} style={styles.paymentContainer}>
             <Text>Amount: {payment.amount}</Text>
-            <Text>Date: {payment.date}</Text>
+            <Text>Date: {payment.created_at}</Text>
           </View>
         ))}
       </View>

@@ -52,6 +52,7 @@ useEffect(() => {
     setLine(record.line);
     setBalance(record.balance);
     setEditingId(record.id);
+    
   };
 
   const handleDelete = (id: number) => {
@@ -113,7 +114,12 @@ useEffect(() => {
               <View>
                 <TouchableOpacity 
                   className='w-15 bg-blue-700 p-2 rounded-sm h-10' 
-                  onPress={() => router.push(`/customer/details?customerId=${record.id}`)}
+                  onPress={() => {
+                    router.push({
+                      pathname: '/customer/details',
+                      params: { customerId: record.id }
+                    });
+                  }}
                 >
                   <Text className='text-white font-bold'>Details</Text></TouchableOpacity>
               </View>
