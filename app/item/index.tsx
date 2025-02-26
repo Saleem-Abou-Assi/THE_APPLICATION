@@ -64,8 +64,9 @@ const Items: React.FC = () => {
 
   return (
    
-      <View className='flex-1 w-[100%] items-center overflow-y-scroll'>
-        <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-5 gap-y-3 rounded-lg'>
+      <ScrollView className='flex-1 w-[100%]  overflow-y-scroll'>
+        <View className='flex-1 items-center'>
+        <View className='w-[100%] bg-white shadow-slate-700 p-3 m-5 grid grid-rows-5 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
           <TextInput 
             placeholder="Selling Price" 
@@ -88,7 +89,7 @@ const Items: React.FC = () => {
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
         
-        <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
+        <View className='w-[100%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className='p-2 '>
             <TextInput
               className="bg-gray-200 p-2 rounded-md "
@@ -131,7 +132,8 @@ const Items: React.FC = () => {
           </ScrollView>
         </KeyboardAvoidingView>
         </View>
-      </View>
+        </View>
+      </ScrollView>
     
   );
 };
