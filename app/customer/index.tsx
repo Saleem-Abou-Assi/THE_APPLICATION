@@ -63,11 +63,7 @@ useEffect(() => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
-    >
+   
       <View className='flex-1 w-[100%] items-center'>
         <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
@@ -81,6 +77,8 @@ useEffect(() => {
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
         
+            <KeyboardAvoidingView keyboardVerticalOffset={100}
+            behavior="padding" className='flex-1 w-full items-center'>
         <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className=''>
             <TextInput
@@ -127,8 +125,9 @@ useEffect(() => {
           ))}
           </ScrollView>
         </View>
+          </KeyboardAvoidingView>
       </View>
-    </KeyboardAvoidingView>
+   
   );
 };
 

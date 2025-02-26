@@ -63,12 +63,8 @@ const Items: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
-    >
-      <View className='flex-1 w-[100%] items-center'>
+   
+      <View className='flex-1 w-[100%] items-center overflow-y-scroll'>
         <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-5 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
           <TextInput 
@@ -93,32 +89,37 @@ const Items: React.FC = () => {
         </View>
         
         <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
-          <View className='flex-1 flex-row max-h-8 justify-center gap-x-2'>
-            <View className='w-[15%] items-center '><Text className='font-bold text-lg'>اسم المنتج</Text></View>
-            <View className='w-[15%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
-            <View className='w-[16%] items-center'><Text className='font-bold text-lg'> الشراء</Text></View>
-            <View className='w-[15%] items-center'><Text className='font-bold text-lg'>الكمية</Text></View>
-            <View className='w-[25%] items-center'><Text className='font-bold text-lg'>تفاعل</Text></View>
-          </View>
-          <View className='h-0.5 bg-gray-500 w-full'></View>
-          <View className=''>
+          <View className='p-2 '>
             <TextInput
-              className="bg-gray-200 p-2 rounded-md mb-4"
+              className="bg-gray-200 p-2 rounded-md "
               placeholder="Search items..."
               value={searchTerm}
               onChangeText={setSearchTerm}
             />
           </View>
+
+
+       
+          <View className='flex-1 flex-row max-h-9 justify-center gap-x-3 m-2'>
+            <View className='w-[15%] items-center '><Text className='font-bold text-lg'> المنتج</Text></View>
+            <View className='w-[15%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
+            <View className='w-[16%] items-center'><Text className='font-bold text-lg'> الشراء</Text></View>
+            <View className='w-[15%] items-center'><Text className='font-bold text-lg mx-1'>الكمية</Text></View>
+            <View className='w-[28%] items-center '><Text className='font-bold text-lg '>تفاعل</Text></View>
+          </View>
+          <View className='h-0.5 bg-gray-500 w-full'></View>
+           <KeyboardAvoidingView keyboardVerticalOffset={-100}
+            behavior="padding" className='flex-1 w-full items-center'>
           <ScrollView>
             {filteredItems.map((record) => (
-              <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-2'>
+              <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-3'>
                 <View className='w-[15%] items-center'><Text>{record.name}</Text></View>
                 <View className='w-[15%] items-center'><Text>{record.b_price}</Text></View>
                 <View className='w-[15%] items-center'><Text>{record.s_price}</Text></View>
                 <View className='w-[15%] items-center'><Text>{record.quantity}</Text></View>
                 <View>
                   <TouchableOpacity 
-                    className='w-11 p-2 bg-[#FCa311] rounded-sm cursor-pointer h-10'
+                    className='w-11 p-2 mx-1 bg-[#FCa311] rounded-sm cursor-pointer h-10'
                     onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
                 </View>
                 <View>
@@ -128,9 +129,10 @@ const Items: React.FC = () => {
               </View>
             ))}
           </ScrollView>
+        </KeyboardAvoidingView>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    
   );
 };
 
