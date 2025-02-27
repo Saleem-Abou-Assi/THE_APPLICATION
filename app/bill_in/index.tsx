@@ -32,6 +32,7 @@ const BillInPage = () => {
     // Form state
     const [selectedCustomerId, setSelectedCustomerId] = useState<number>(0);
     const [selectedItems, setSelectedItems] = useState<BillItem[]>([]);
+    const [discount, setDiscount] = useState<number>(0);
     const [payment, setPayment] = useState<number>(0);
 
     // New state for search query
@@ -286,15 +287,52 @@ const BillInPage = () => {
                         <Text className='font-bold w-20 text-center mb-3'>رصيد سابق:</Text>
                     </View>
                     <View className='flex-1 flex-row w-full justify-center items-center mt-1'>
+                    <View className='flex-1 flex-row w-[45%] items-center'>
+                        <TextInput
+                        className="bg-gray-200 p-2 rounded-md mb-4 w-[50%] text-center"
+                        placeholder="Discount"
+                        keyboardType="numeric"
+                        value={discount.toString()}
+                        onChangeText={(value) => {
+                            const numericValue = Number(value);
+                            if (!isNaN(numericValue) && numericValue >= 0) {
+                                setDiscount(numericValue);
+                            }
+                        }}
+                         />
+                            <Text className='font-bold w-20 text-center mb-3'>خصم:</Text>
+                    </View>
+                    <View className='flex-1 flex-row w-[45%] items-center justify-center'>
                     <TextInput
-                        className="bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center"
+                        className="bg-gray-200 p-2 rounded-md mb-4 w-[70%] text-center"
                         placeholder="Payment"
                         keyboardType="numeric"
                         value={payment.toString()}
                         onChangeText={(value) => setPayment(Number(value))}
                     />
-                        <Text className='font-bold w-20 text-center mb-3'>المدفوعات:</Text>
+                        <Text className='font-bold w-36 text-center mb-3 mr-3'>المدفوعات:</Text>
                     </View>
+                    
+                    </View>
+                    <View className='h-0.5 bg-gray-500 w-full mb-3'></View>
+                    <View className='flex-1 flex-row w-full items-center'>
+                        <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>
+                            {selectedItems.reduce((total, item) => {
+                                const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
+                                return total + (price * item.quantity);
+                            }, 0) - discount}
+                        </Text>
+                        <Text className='font-bold w-28 text-center mb-3'>
+                            الرصيد الحالي: {
+                                (selectedCustomer?.balance || 0) + 
+                                selectedItems.reduce((total, item) => {
+                                    const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
+                                    return total + (price * item.quantity);
+                                }, 0) - 
+                                payment - 
+                                discount
+                            }
+                        </Text>                    </View>
                     <TouchableOpacity
                         className='w-full bg-blue-500 p-2 rounded-md'
                         onPress={handleSubmit}

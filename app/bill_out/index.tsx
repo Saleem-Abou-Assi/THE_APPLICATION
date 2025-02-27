@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Button, TextInput, Searchbar } from 'react-native-paper';
 import { initBillOut, createBillOut, createItem } from '../../src/crud/bill_out';
 import { Traders } from '@/src/entity/Traders';
@@ -41,6 +40,10 @@ const BillOutPage = () => {
     const [itemSearch, setItemSearch] = useState<string>('');
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
     const [filteredItems, setFilteredItems] = useState<ItemSuggestion[]>([]);
+    
+    // Modal visibility states
+    const [traderModalVisible, setTraderModalVisible] = useState(false);
+    const [itemModalVisible, setItemModalVisible] = useState(false);
 
     // Initialize bill data
     useEffect(() => {
@@ -170,163 +173,187 @@ const BillOutPage = () => {
         }
     };
 
+    const openTraderModal = () => {
+        setTraderModalVisible(true);
+    };
+
+    const closeTraderModal = () => {
+        setTraderModalVisible(false);
+    };
+
+    const openItemModal = () => {
+        setItemModalVisible(true);
+    };
+
+    const closeItemModal = () => {
+        setItemModalVisible(false);
+    };
+
     if (loading) {
         return <Text>Loading...</Text>;
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Create Outgoing Bill</Text>
+        <ScrollView className='flex-1 w-full overflow-y-scroll'>
+            <View className='flex-1 w-[100%] items-center'>
+                <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
+                    <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
 
-            <Picker
-                selectedValue={selectedTraderId}
-                onValueChange={(value) => setSelectedTraderId(Number(value))}
-            >
-                <Picker.Item label="Select Trader" value={0} />
-                {traders.map(trader => (
-                    <Picker.Item 
-                        key={trader.id} 
-                        label={trader.name} 
-                        value={trader.id} 
-                    />
-                ))}
-            </Picker>
+                    <Button mode="contained" onPress={openTraderModal} style={{ marginVertical: 10 }}>
+                        Select Trader
+                    </Button>
 
-            <Button mode="contained" onPress={addItemToBill} style={styles.button}>
-                Add Item
-            </Button>
+                    <Text className='text-center mb-2'>Selected Trader: {selectedTraderId ? traders.find(t => t.id === selectedTraderId)?.name : "None"}</Text>
 
-            {selectedItems.map((item, index) => (
-                <View key={index} style={styles.itemRow}>
-                    <View style={styles.searchContainer}>
-                        <Searchbar
-                            placeholder="Search item"
-                            onChangeText={(text) => handleItemSearch(text, index)}
-                            value={itemSearch}
-                            style={styles.searchBar}
-                        />
-                        {showSuggestions && (
-                            <View style={styles.suggestionsContainer}>
-                                <ScrollView nestedScrollEnabled={true} style={styles.suggestionsList}>
-                                    {filteredItems.map((suggestion) => (
-                                        <TouchableOpacity
-                                            key={suggestion.id}
-                                            style={styles.suggestionItem}
-                                            onPress={() => handleItemSelect(index, suggestion)}
-                                        >
-                                            <Text>{suggestion.name}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </ScrollView>
+                    <Button mode="contained" onPress={addItemToBill} style={{ marginVertical: 10 }}>
+                        Add Item
+                    </Button>
+
+                    {selectedItems.map((item, index) => (
+                        <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                            <View style={{ flex: 2, position: 'relative' }}>
+                                <Searchbar
+                                    placeholder="Search item"
+                                    onChangeText={(text) => handleItemSearch(text, index)}
+                                    value={itemSearch}
+                                    style={{ elevation: 0, backgroundColor: '#f5f5f5' }}
+                                />
+                                {showSuggestions && (
+                                    <View style={{
+                                        position: 'absolute',
+                                        top: 60,
+                                        left: 0,
+                                        right: 0,
+                                        backgroundColor: 'white',
+                                        borderRadius: 4,
+                                        elevation: 4,
+                                        zIndex: 1000,
+                                        maxHeight: 200,
+                                    }}>
+                                        <ScrollView nestedScrollEnabled={true} style={{ padding: 10 }}>
+                                            {filteredItems.map((suggestion) => (
+                                                <TouchableOpacity
+                                                    key={suggestion.id}
+                                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
+                                                    onPress={() => handleItemSelect(index, suggestion)}
+                                                >
+                                                    <Text>{suggestion.name}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </ScrollView>
+                                    </View>
+                                )}
                             </View>
-                        )}
-                    </View>
+
+                            <TextInput
+                                keyboardType="numeric"
+                                value={item.quantity.toString()}
+                                onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
+                                style={{ flex: 1, marginHorizontal: 5 }}
+                                label="Qty"
+                            />
+
+                            <TextInput
+                                keyboardType="numeric"
+                                value={item.price.toString()}
+                                onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                style={{ flex: 1, marginHorizontal: 5 }}
+                                label="Price"
+                            />
+
+                            <TextInput
+                                value={item.note || ''}
+                                onChangeText={(value) => updateItem(index, 'note', value)}
+                                style={{ flex: 1, marginHorizontal: 5 }}
+                                label="Note"
+                            />
+
+                            <Button onPress={() => removeItem(index)}>Remove</Button>
+                        </View>
+                    ))}
 
                     <TextInput
+                        label="Payment"
                         keyboardType="numeric"
-                        value={item.quantity.toString()}
-                        onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
-                        style={styles.input}
-                        label="Qty"
+                        value={payment.toString()}
+                        onChangeText={(value) => setPayment(Number(value))}
+                        style={{ marginVertical: 10 }}
                     />
 
-                    <TextInput
-                        keyboardType="numeric"
-                        value={item.price.toString()}
-                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                        style={styles.input}
-                        label="Price"
-                    />
-
-                    <TextInput
-                        value={item.note || ''}
-                        onChangeText={(value) => updateItem(index, 'note', value)}
-                        style={styles.input}
-                        label="Note"
-                    />
-
-                    <Button onPress={() => removeItem(index)}>Remove</Button>
+                    <Button 
+                        mode="contained" 
+                        onPress={handleSubmit}
+                        disabled={!selectedTraderId || selectedItems.length === 0}
+                        style={{ marginVertical: 20 }}
+                    >
+                        Create Bill
+                    </Button>
                 </View>
-            ))}
+            </View>
 
-            <TextInput
-                label="Payment"
-                keyboardType="numeric"
-                value={payment.toString()}
-                onChangeText={(value) => setPayment(Number(value))}
-                style={styles.paymentInput}
-            />
-
-            <Button 
-                mode="contained" 
-                onPress={handleSubmit}
-                disabled={!selectedTraderId || selectedItems.length === 0}
-                style={styles.submitButton}
+            {/* Trader Selection Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={traderModalVisible}
+                onRequestClose={closeTraderModal}
             >
-                Create Bill
-            </Button>
+                <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <View style={{ backgroundColor: 'white', margin: 20, borderRadius: 10, padding: 20 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Select Trader</Text>
+                        <ScrollView>
+                            {traders.map(trader => (
+                                <TouchableOpacity
+                                    key={trader.id}
+                                    onPress={() => {
+                                        setSelectedTraderId(trader.id);
+                                        closeTraderModal();
+                                    }}
+                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
+                                >
+                                    <Text>{trader.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                        <Button onPress={closeTraderModal} style={{ marginTop: 10 }}>Close</Button>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Item Selection Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={itemModalVisible}
+                onRequestClose={closeItemModal}
+            >
+                <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <View style={{ backgroundColor: 'white', margin: 20, borderRadius: 10, padding: 20 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Select Item</Text>
+                        <ScrollView>
+                            {items.map(item => (
+                                <TouchableOpacity
+                                    key={item.id}
+                                    onPress={() => {
+                                        // Handle item selection logic here
+                                        closeItemModal();
+                                    }}
+                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
+                                >
+                                    <Text>{item.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                        <Button onPress={closeItemModal} style={{ marginTop: 10 }}>Close</Button>
+                    </View>
+                </View>
+            </Modal>
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    itemRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    itemPicker: {
-        flex: 2,
-    },
-    input: {
-        flex: 1,
-        marginHorizontal: 5,
-    },
-    button: {
-        marginVertical: 10,
-    },
-    paymentInput: {
-        marginVertical: 10,
-    },
-    submitButton: {
-        marginVertical: 20,
-    },
-    searchContainer: {
-        flex: 2,
-        position: 'relative',
-    },
-    searchBar: {
-        elevation: 0,
-        backgroundColor: '#f5f5f5',
-    },
-    suggestionsContainer: {
-        position: 'absolute',
-        top: 60,
-        left: 0,
-        right: 0,
-        backgroundColor: 'white',
-        borderRadius: 4,
-        elevation: 4,
-        zIndex: 1000,
-        maxHeight: 200,
-    },
-    suggestionsList: {
-        padding: 10,
-    },
-    suggestionItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-    },
+    // You can keep or modify styles as needed
 });
 
 export default BillOutPage;
