@@ -75,7 +75,6 @@ export const getCustomerDetails = async (customerId: number) => {
       return { ...bill, items: itemDetails };
     }));
 
-    console.log(billsWithItems);
     // Get all payments made by the customer
     const payments = await db.getAllAsync('SELECT * FROM income WHERE customer_id = ?', customerId);
 

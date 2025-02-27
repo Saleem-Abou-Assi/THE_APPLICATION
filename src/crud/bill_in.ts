@@ -45,26 +45,28 @@ export const createBill = async (billData: {
 
         // Insert bill items
         for (const item of billData.items_array) {
-            
             await db.runAsync(
                 'INSERT INTO item_bill_in (item_id, bill_in_id, price, quantity, note) VALUES (?, ?, ?, ?, ?)',
                 [ item.itemId, bill.lastInsertRowId ,item.price, item.quantity, item.note]
             );
+
+            // Update item quantity
+            await db.runAsync(
+                'UPDATE items SET quantity = quantity - ? WHERE id = ?',
+                [item.quantity, item.itemId]
+            );
         }
 
         // Insert payments
-       
         await db.runAsync(
             'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
             [billData.pay, billData.customer_id, billData.bill_in_id, " "]
-            );
-        }
-        catch (error) {
-            console.error('Error creating bill:', error);
-            throw error;
-
-     
+        );
+        
+        return { success: true };
+    } catch (error) {
+        console.error('Error creating bill:', error);
+        throw error;
     }
-    return { success: true }; 
-    }
+}
 
