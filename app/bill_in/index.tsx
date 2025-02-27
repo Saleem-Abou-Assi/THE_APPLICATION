@@ -152,7 +152,7 @@ const BillInPage = () => {
             keyboardVerticalOffset={100}
         >
             <View className='flex-1 w-[100%] items-center'>
-                <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
+                <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
                     <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
                     <View className='w-full flex flex-row gap-x-2 justify-center'>
                     <TouchableOpacity
@@ -217,7 +217,7 @@ const BillInPage = () => {
                         <Text className='font-bold w-[37%] text-center'>المادة</Text>
                         <Text className='font-bold w-20 text-center'>الكمية</Text>
                         <Text className='font-bold w-20 text-center'>المبيع</Text>
-                        <Text className='font-bold w-20 text-center'>حذف</Text>
+                        <Text className='font-bold w-20 text-center'>المجموع</Text>
                         </View>                
                     {selectedItems.map((item, index) => (
                         <View className='bg-gray-100 '>
@@ -251,12 +251,14 @@ const BillInPage = () => {
                                 onChangeText={(value) => updateItem(index, 'price', Number(value))}
                                 placeholder="Price"
                             />
-                           
+                           <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center">
+                               {item.itemId ? (items.find(i => i.id === item.itemId)?.s_price || 0) * item.quantity : 0}
+                           </Text>
                             <TouchableOpacity
-                                className='bg-red-500 p-2 rounded-md'
+                                className='bg-red-500 p-1 rounded-md'
                                 onPress={() => removeItem(index)}
                             >
-                                <Text className='text-white'>Remove</Text>
+                                <Text className='text-white'> X </Text>
                             </TouchableOpacity>
                             
                         </View>
