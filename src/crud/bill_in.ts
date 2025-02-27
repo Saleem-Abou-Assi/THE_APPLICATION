@@ -45,26 +45,36 @@ export const createBill = async (billData: {
 
         // Insert bill items
         for (const item of billData.items_array) {
-            
             await db.runAsync(
                 'INSERT INTO item_bill_in (item_id, bill_in_id, price, quantity, note) VALUES (?, ?, ?, ?, ?)',
                 [ item.itemId, bill.lastInsertRowId ,item.price, item.quantity, item.note]
             );
-        }
 
-        // Insert payments
-       
-        await db.runAsync(
-            'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
-            [billData.pay, billData.customer_id, billData.bill_in_id, " "]
+            // Update item quantity
+            await db.runAsync(
+                'UPDATE items SET quantity = quantity - ? WHERE id = ?',
+                [item.quantity, item.itemId]
             );
         }
-        catch (error) {
-            console.error('Error creating bill:', error);
-            throw error;
 
-     
+        // Only create payment if payment amount is greater than 0
+        if (billData.pay > 0) {
+            await db.runAsync(
+                'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
+                [billData.pay, billData.customer_id, billData.bill_in_id, " "]
+            );
+        }
+
+        // Update customer balance
+        await db.runAsync(
+            'UPDATE customers SET balance = balance - ? + ? WHERE id = ?',
+            [billData.total_cost, billData.pay, billData.customer_id]
+        );
+        
+        return { success: true };
+    } catch (error) {
+        console.error('Error creating bill:', error);
+        throw error;
     }
-    return { success: true }; 
-    }
+}
 

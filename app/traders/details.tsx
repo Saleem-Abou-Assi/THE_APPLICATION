@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { getCustomerDetails } from '../../src/crud/cutomers';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { getTraderDetails } from '../../src/crud/traders';
 
-export default function CustomerDetails() {
-  const { customerId } = useLocalSearchParams();
+export default function TraderDetails() {
+  const { traderId } = useLocalSearchParams();
   
-
-  const [customerData, setCustomerData] = useState<any>(null);
+  const [traderData, setTraderData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getCustomerDetails(Number(customerId));
-        setCustomerData(data);
+        const data = await getTraderDetails(Number(traderId));
+        setTraderData(data);
       } catch (err) {
-        setError('Failed to fetch customer details');
+        setError('Failed to fetch trader details');
         console.error(err);
       } finally {
         setLoading(false);
@@ -25,7 +24,7 @@ export default function CustomerDetails() {
     };
 
     fetchData();
-  }, [customerId]);
+  }, [traderId]);
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -35,26 +34,22 @@ export default function CustomerDetails() {
     return <Text>{error}</Text>;
   }
 
-  if (!customerData) {
-    return <Text>No customer data found</Text>;
+  if (!traderData) {
+    return <Text>No trader data found</Text>;
   }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.title}>Customer Information</Text>
-        <Text>Name: {customerData.customer.name}</Text>
-        <Text>Line: {customerData.customer.line}</Text>
-        <Text>Balance: {customerData.customer.balance}</Text>
-        <Text>Total Bills: {customerData.totalBills}</Text>
-        <Text>Total Payments: {customerData.totalPayments}</Text>
+        <Text style={styles.title}>Trader Information</Text>
+        <Text>Name: {traderData.trader.name}</Text>
+        <Text>Balance: {traderData.trader.balance}</Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.title}>Bills</Text>
-        {customerData.bills.map((bill: any) => (
+        {traderData.bills.map((bill: any) => (
           <View key={bill.id} style={styles.billContainer}>
-            <Text>Date: {bill.created_at}</Text>
             <Text>Total Cost: {bill.total_cost}</Text>
             <Text>Paid: {bill.pay}</Text>
             <Text>Old Balance: {bill.old_balance}</Text>
@@ -62,16 +57,16 @@ export default function CustomerDetails() {
             <Text>Items:</Text>
             {bill.items.map((item: any) => (
               <View key={item.item_id} style={styles.itemContainer}>
-                <Text>{item.name} - {item.sold_quantity} x {item.sold_price}</Text>
+                <Text>{item.name} - {item.quantity} x {item.price}</Text>
               </View>
             ))}
           </View>
-        ))} 
+        ))}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.title}>Payments</Text>
-        {customerData.payments.map((payment: any) => (
+        {traderData.payments.map((payment: any) => (
           <View key={payment.id} style={styles.paymentContainer}>
             <Text>Amount: {payment.amount}</Text>
             <Text>Date: {payment.created_at}</Text>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/traders'; // Updated import
 import { Traders } from '../../src/entity/Traders'; // Assuming you have a Traders entity similar to Item
+import { useRouter } from 'expo-router';
 
 const TradersComponent: React.FC = () => { // Updated component name
   const [records, setRecords] = useState<Traders[]>([]); // Updated type
@@ -9,6 +10,7 @@ const TradersComponent: React.FC = () => { // Updated component name
   const [balance, setBalance] = useState(0);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = () => {
@@ -94,6 +96,18 @@ const TradersComponent: React.FC = () => { // Updated component name
               <View>
                 <TouchableOpacity className='w-fit max-w-fit h-9 bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)}>
                   <Text className='text-white font-bold'>Delete</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity 
+                  className='w-fit h-9 p-2 bg-blue-500 rounded-sm'
+                  onPress={() => {
+                    router.push({
+                      pathname: '/traders/details',
+                      params: { traderId : record.id }
+                    });
+                  }}>
+                  <Text className='text-white'>Details</Text>
                 </TouchableOpacity>
               </View>
             </View>

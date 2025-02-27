@@ -103,7 +103,11 @@ const BillInPage = () => {
     };
 
     const calculateTotals = () => {
-        const totalCost = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+        const totalCost = selectedItems.reduce((sum, item) => {
+            const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
+            return sum + (item.quantity * itemPrice);
+        }, 0);
+        
         const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
         const oldBalance = selectedCustomer?.balance || 0;
         const newBalance = oldBalance + totalCost - payment;
@@ -114,10 +118,19 @@ const BillInPage = () => {
     const handleSubmit = async () => {
         const { totalCost, oldBalance, newBalance } = calculateTotals();
         
+        // Ensure items have correct prices
+        const itemsWithPrices = selectedItems.map(item => {
+            const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
+            return {
+                ...item,
+                price: itemPrice
+            };
+        });
+
         const billData: BillData = {
-            bill_in_id: Date.now(), // or generate from your backend
+            bill_in_id: Date.now(),
             customer_id: selectedCustomerId,
-            items_array: selectedItems,
+            items_array: itemsWithPrices,
             pay: payment,
             total_cost: totalCost,
             old_balance: oldBalance,
@@ -221,9 +234,9 @@ const BillInPage = () => {
                         <Text className='font-bold w-20 text-center'>المجموع</Text>
                         </View>                
                     {selectedItems.map((item, index) => (
-                        <View className='bg-gray-100 p-1'>
-                        <View key={index} className='flex-row items-center gap-2 mb-4'>
-                            <View className='flex-1 w-[25%] '>
+                        <View className='bg-gray-100' key={`item-container-${index}`}>
+                        <View key={`item-row-${index}`} className='flex-row items-center gap-2 mb-4'>
+                            <View className='flex-1 w-[25%]'>
                                 <TouchableOpacity
                                     className='bg-gray-200 p-2 rounded-md'
                                     onPress={() => {
@@ -248,10 +261,11 @@ const BillInPage = () => {
                             <TextInput
                                 className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
                                 keyboardType="numeric"
-                                value={item.itemId ? items.find(i => i.id === item.itemId)?.s_price.toString() || "" : ""}
+                                value={item.price > 0 ? item.price.toString() : (items.find(i => i.id === item.itemId)?.s_price.toString() || "")}
                                 onChangeText={(value) => updateItem(index, 'price', Number(value))}
                                 placeholder="Price"
                             />
+
                            <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center">
                                {item.itemId ? (items.find(i => i.id === item.itemId)?.s_price || 0) * item.quantity : 0}
                            </Text>
