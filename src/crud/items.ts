@@ -17,7 +17,6 @@ export const createRecord = async (name: string, b_price: number, s_price: numbe
 export const getRecords = async (callback: (items: any[]) => void) => {
     
   const records = await db.getAllAsync('SELECT * FROM items');
-    console.log("Records retrieved successfully: ", records);
     callback(records);
 };
 
