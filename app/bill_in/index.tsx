@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView,TextInput, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView,TextInput, Platform, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 import { initBill, createBill } from '../../src/crud/bill_in';
@@ -177,7 +177,7 @@ const BillInPage = () => {
                         <Text style={{ marginLeft: 5,color:'white' }}>▼</Text>
                     </TouchableOpacity>
                     <View>
-                    <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>{selectedCustomer ? selectedCustomer.line :""} :الخط</Text>
+                    <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>الخط: {selectedCustomer ? selectedCustomer.line :""} </Text>
                     </View>
                     </View>
                     <Modal
@@ -186,39 +186,39 @@ const BillInPage = () => {
                         visible={modalVisible}
                         onRequestClose={() => setModalVisible(false)}
                     >
-                        <View className='flex-1 justify-center'>
-                            <View className='bg-white rounded-t-lg p-4 shadow-lg'>
-                                <TextInput
-                                    ref={searchInputRef}
-                                    className="bg-gray-200 p-2 rounded-md mb-4"
-                                    placeholder="Search Customer"
-                                    value={searchQuery}
-                                    onChangeText={setSearchQuery}
-                                />
-
-                                <ScrollView>
-                                    {filteredCustomers.map(customer => (
-                                        <TouchableOpacity
-                                            key={customer.id}
-                                            onPress={() => {
-                                                setSelectedCustomer(customer);
-                                                setSelectedCustomerId(customer.id);
-                                                setModalVisible(false);
-                                            }}
-                                        >
-                                            <Text className='p-4'>{customer.name}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </ScrollView>
-
-                                <TouchableOpacity
-                                    onPress={() => setModalVisible(false)}
-                                    className='mt-4 bg-red-500 p-2 rounded-md'
-                                >
-                                    <Text className='text-white text-center'>Close</Text>
-                                </TouchableOpacity>
+                        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                            <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+                                <View className='bg-white rounded-lg p-4 shadow-lg w-[85%]'>
+                                    <TextInput
+                                        ref={searchInputRef}
+                                        className="bg-gray-200 p-2 rounded-md mb-4"
+                                        placeholder="Search Customer"
+                                        value={searchQuery}
+                                        onChangeText={setSearchQuery}
+                                    />
+                                    <ScrollView>
+                                        {filteredCustomers.map(customer => (
+                                            <TouchableOpacity
+                                                key={customer.id}
+                                                onPress={() => {
+                                                    setSelectedCustomer(customer);
+                                                    setSelectedCustomerId(customer.id);
+                                                    setModalVisible(false);
+                                                }}
+                                            >
+                                                <Text className='p-4'>{customer.name}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                    <TouchableOpacity
+                                        onPress={() => setModalVisible(false)}
+                                        className='mt-4 bg-red-500 p-2 rounded-md'
+                                    >
+                                        <Text className='text-white text-center'>Close</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
+                        </TouchableWithoutFeedback>
                     </Modal>
 
                     <TouchableOpacity
@@ -227,15 +227,17 @@ const BillInPage = () => {
                     >
                         <Text className='text-center font-bold'>Add Item</Text>
                     </TouchableOpacity>
+                    <View className='h-0.5 bg-gray-300 w-full mb-3'></View>
                     <View className='felx-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 gap-1'>
-                        <Text className='font-bold w-[37%] text-center'>المادة</Text>
+                        <Text className='font-bold w-[32%] text-center'>المادة</Text>
                         <Text className='font-bold w-20 text-center'>الكمية</Text>
                         <Text className='font-bold w-20 text-center'>المبيع</Text>
                         <Text className='font-bold w-20 text-center'>المجموع</Text>
-                        </View>                
+                        </View>  
+                                      
                     {selectedItems.map((item, index) => (
                         <View className='bg-gray-100' key={`item-container-${index}`}>
-                        <View key={`item-row-${index}`} className='flex-row items-center gap-2 mb-4'>
+                        <View key={`item-row-${index}`} className='flex-row items-center gap-2 m-2'>
                             <View className='flex-1 w-[25%]'>
                                 <TouchableOpacity
                                     className='bg-gray-200 p-2 rounded-md'
@@ -292,10 +294,10 @@ const BillInPage = () => {
                         </Text>
                         <Text className='font-bold w-28 text-center mb-3'>مجموع الفاتورة:</Text>
                     </View>
-                    <View className='flex-1 flex-row w-full justify-center items-center mt-1'>
+                    <View className='flex-1 flex-row w-full justify-center items-center mt-1 pr-1'>
                     <View className='flex-1 flex-row w-[45%] items-center'>
                         <TextInput
-                        className="bg-gray-200 p-2 rounded-md mb-4 w-[50%] text-center"
+                        className="bg-orange-200 p-2 rounded-md mb-4 w-[50%] text-center"
                         placeholder="Discount"
                         keyboardType="numeric"
                         value={discount.toString()}
@@ -306,17 +308,17 @@ const BillInPage = () => {
                             }
                         }}
                          />
-                            <Text className='font-bold w-20 text-center mb-3'>خصم:</Text>
+                            <Text className='font-bold w-20 text-end p-1  mb-3'>خصم:</Text>
                     </View>
                     <View className='flex-1 flex-row w-[45%] items-center justify-center'>
                     <TextInput
-                        className="bg-gray-200 p-2 rounded-md mb-4 w-[70%] text-center"
+                        className="bg-orange-200 p-2 rounded-md mb-4 w-[70%] text-center"
                         placeholder="Payment"
                         keyboardType="numeric"
                         value={payment.toString()}
                         onChangeText={(value) => setPayment(Number(value))}
                     />
-                        <Text className='font-bold w-36 text-center mb-3 mr-3'>المدفوعات:</Text>
+                        <Text className='font-bold w-36 text-center mb-3'>   المدفوعات:</Text>
                     </View>
                     
                     </View>
@@ -346,37 +348,39 @@ const BillInPage = () => {
                 visible={itemModalVisible}
                 onRequestClose={() => setItemModalVisible(false)}
             >
-                <View className='flex-1 justify-center'>
-                    <View className='bg-white rounded-t-lg p-4 shadow-lg'>
-                        <TextInput
-                            className="bg-gray-200 p-2 rounded-md mb-4"
-                            placeholder="Search Item"
-                            value={itemSearchQuery}
-                            onChangeText={setItemSearchQuery}
-                        />
-                        <ScrollView>
-                            {filteredItems.map(item => (
-                                <TouchableOpacity
-                                    key={item.id}
-                                    onPress={() => {
-                                        if (selectedItemIndex !== null) {
-                                            updateItem(selectedItemIndex, 'itemId', item.id);
-                                        }
-                                        setItemModalVisible(false);
-                                    }}
-                                >
-                                    <Text className='p-4'>{item.name}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                        <TouchableOpacity
-                            onPress={() => setItemModalVisible(false)}
-                            className='mt-4 bg-red-500 p-2 rounded-md'
-                        >
-                            <Text className='text-white text-center'>Close</Text>
-                        </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={() => setItemModalVisible(false)}>
+                    <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+                        <View className='bg-white rounded-lg p-4 shadow-lg w-[85%]'>
+                            <TextInput
+                                className="bg-gray-200 p-2 rounded-md mb-4"
+                                placeholder="Search Item"
+                                value={itemSearchQuery}
+                                onChangeText={setItemSearchQuery}
+                            />
+                            <ScrollView>
+                                {filteredItems.map(item => (
+                                    <TouchableOpacity
+                                        key={item.id}
+                                        onPress={() => {
+                                            if (selectedItemIndex !== null) {
+                                                updateItem(selectedItemIndex, 'itemId', item.id);
+                                            }
+                                            setItemModalVisible(false);
+                                        }}
+                                    >
+                                        <Text className='p-4'>{item.name}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                            <TouchableOpacity
+                                onPress={() => setItemModalVisible(false)}
+                                className='mt-4 bg-red-500 p-2 rounded-md'
+                            >
+                                <Text className='text-white text-center'>Close</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
         </KeyboardAvoidingView>
         </ScrollView>

@@ -56,7 +56,7 @@ const TradersComponent: React.FC = () => { // Updated component name
   return (
     
       <View className='flex-1 w-[100%] items-center'>
-        <View className='w-[85%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
+        <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
           <TextInput 
             placeholder="Balance" 
@@ -67,7 +67,7 @@ const TradersComponent: React.FC = () => { // Updated component name
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
 
-        <View className='w-[85%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
+        <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className=''>
             <TextInput
               className="bg-gray-200 p-2 rounded-md mb-4"
@@ -79,16 +79,16 @@ const TradersComponent: React.FC = () => { // Updated component name
           <View className='flex-1 flex-row max-h-8 items-end justify-center'>
             <View className='w-[25%] items-start pl-1'><Text className='font-bold text-lg'>Name</Text></View>
             <View className='w-[25%] items-start'><Text className='font-bold text-lg'>Balance</Text></View>
-            <View className='w-[35%] items-center'><Text className='font-bold text-lg'>Action</Text></View>
+            <View className='w-[40%] items-center'><Text className='font-bold text-lg'>Action</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
    <ScrollView className='flex-1 overflow-scroll'>
           {filteredItems.map((record) => (
            
-            <View key={record.id} className='flex-1 flex-row gap-x-8 items-center justify-center max-h-9 my-2 '>
-              <View className='w-[20%] items-start'><Text>{record.name}</Text></View>
-              <View className='w-[20%]'><Text>{record.balance}</Text></View>
-              <View>
+            <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-9 my-1 '>
+              <View className='w-[20%] items-center'><Text className='text-center'>{record.name}</Text></View>
+              <View className='w-[20%] mx-2'><Text className='text-center'>{record.balance}</Text></View>
+              <View >
                 <TouchableOpacity 
                   className='w-fit h-9 p-2 bg-[#FCa311] rounded-sm cursor-pointer'
                   onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
@@ -107,7 +107,7 @@ const TradersComponent: React.FC = () => { // Updated component name
                       params: { traderId : record.id }
                     });
                   }}>
-                  <Text className='text-white'>Details</Text>
+                  <Text className='text-white font-bold'>Details</Text>
                 </TouchableOpacity>
               </View>
             </View>

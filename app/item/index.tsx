@@ -67,25 +67,40 @@ const Items: React.FC = () => {
       <ScrollView className='flex-1 w-[100%]  overflow-y-scroll'>
         <View className='flex-1 items-center'>
         <View className='w-[100%] bg-white shadow-slate-700 p-3 m-5 grid grid-rows-5 gap-y-3 rounded-lg'>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} />
+          <View className='flex-1 flex-row-reverse w-full items-center p-1 justify-center'>
+            <Text className='font-bold w-20 text-end'>اسم المنتج:</Text>
+          <TextInput placeholder="Name" value={name} onChangeText={setName} className='bg-gray-100 w-[80%] rounded-md'/>
+          </View>
+          <View className='flex-1 flex-row-reverse w-full items-center p-1'>
+          <Text className='font-bold w-20'> سعر الشراء:</Text>
           <TextInput 
             placeholder="Selling Price" 
             value={String(b_price)} 
             onChangeText={text => setBPrice(Number(text))} 
             keyboardType="numeric" 
+            className='bg-gray-100 w-[80%] rounded-md'
           />
+          </View>
+          <View className='flex-1 flex-row-reverse w-full items-center p-1'>
+          <Text className='font-bold w-20'>سعر المبيع:</Text>
           <TextInput 
             placeholder="Buying Price" 
             value={String(s_price)} 
             onChangeText={text => setSPrice(Number(text))} 
             keyboardType="numeric" 
+            className='bg-gray-100 w-[80%] rounded-md'
           />
+          </View>
+          <View className='flex-1 flex-row-reverse w-full items-center p-1'>
+          <Text className='font-bold w-20'>الكمية:</Text>
           <TextInput 
             placeholder="Quantity" 
             value={String(quantity)} 
             onChangeText={text => setQuantity(Number(text))} 
             keyboardType="numeric" 
+            className='bg-gray-100 w-[80%] rounded-md'
           />
+          </View>
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
         
@@ -103,8 +118,8 @@ const Items: React.FC = () => {
        
           <View className='flex-1 flex-row max-h-9 justify-center gap-x-3 m-2'>
             <View className='w-[15%] items-center '><Text className='font-bold text-lg'> المنتج</Text></View>
-            <View className='w-[15%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
             <View className='w-[16%] items-center'><Text className='font-bold text-lg'> الشراء</Text></View>
+            <View className='w-[15%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
             <View className='w-[15%] items-center'><Text className='font-bold text-lg mx-1'>الكمية</Text></View>
             <View className='w-[28%] items-center '><Text className='font-bold text-lg '>تفاعل</Text></View>
           </View>
