@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/traders'; // Updated import
 import { Traders } from '../../src/entity/Traders'; // Assuming you have a Traders entity similar to Item
 import { useRouter } from 'expo-router';
@@ -54,7 +54,7 @@ const TradersComponent: React.FC = () => { // Updated component name
   );
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    
       <View className='flex-1 w-[100%] items-center'>
         <View className='w-[85%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
@@ -82,9 +82,10 @@ const TradersComponent: React.FC = () => { // Updated component name
             <View className='w-[35%] items-center'><Text className='font-bold text-lg'>Action</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
-
+   <ScrollView className='flex-1 overflow-scroll'>
           {filteredItems.map((record) => (
-            <View key={record.id} className='flex-1 flex-row gap-x-8 items-center justify-center max-h-9 my-2'>
+           
+            <View key={record.id} className='flex-1 flex-row gap-x-8 items-center justify-center max-h-9 my-2 '>
               <View className='w-[20%] items-start'><Text>{record.name}</Text></View>
               <View className='w-[20%]'><Text>{record.balance}</Text></View>
               <View>
@@ -111,9 +112,10 @@ const TradersComponent: React.FC = () => { // Updated component name
               </View>
             </View>
           ))}
+          </ScrollView>
         </View>
       </View>
-    </KeyboardAvoidingView>
+   
   );
 };
 

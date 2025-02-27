@@ -57,10 +57,18 @@ export const createBill = async (billData: {
             );
         }
 
-        // Insert payments
+        // Only create payment if payment amount is greater than 0
+        if (billData.pay > 0) {
+            await db.runAsync(
+                'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
+                [billData.pay, billData.customer_id, billData.bill_in_id, " "]
+            );
+        }
+
+        // Update customer balance
         await db.runAsync(
-            'INSERT INTO income ( amount, customer_id, bill_in_id, note) VALUES (?, ?, ?, ?)',
-            [billData.pay, billData.customer_id, billData.bill_in_id, " "]
+            'UPDATE customers SET balance = balance - ? + ? WHERE id = ?',
+            [billData.total_cost, billData.pay, billData.customer_id]
         );
         
         return { success: true };

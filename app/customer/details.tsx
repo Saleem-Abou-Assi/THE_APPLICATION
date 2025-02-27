@@ -54,6 +54,7 @@ export default function CustomerDetails() {
         <Text style={styles.title}>Bills</Text>
         {customerData.bills.map((bill: any) => (
           <View key={bill.id} style={styles.billContainer}>
+            <Text>Date: {bill.created_at}</Text>
             <Text>Total Cost: {bill.total_cost}</Text>
             <Text>Paid: {bill.pay}</Text>
             <Text>Old Balance: {bill.old_balance}</Text>
@@ -61,7 +62,7 @@ export default function CustomerDetails() {
             <Text>Items:</Text>
             {bill.items.map((item: any) => (
               <View key={item.item_id} style={styles.itemContainer}>
-                <Text>{item.name} - {item.quantity} x {item.price}</Text>
+                <Text>{item.name} - {item.sold_quantity} x {item.sold_price}</Text>
               </View>
             ))}
           </View>

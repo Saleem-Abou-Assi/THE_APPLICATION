@@ -43,13 +43,11 @@ export const deleteRecord = async (id: number) => {
 // Get detailed customer information including bills, items, and payments
 export const getCustomerDetails = async (customerId: number) => {
   try {
-
     // Get customer basic info
     const customer = await db.getFirstAsync('SELECT * FROM customers WHERE id = ?', customerId);
     // Get all bills for the customer
     const bills = await db.getAllAsync('SELECT * FROM bills_in WHERE customer_id = ?', customerId);
     
-    // Get items for each bill
     interface Bill_in {
       id: 'int',
       total_cost: 'double',
@@ -60,30 +58,27 @@ export const getCustomerDetails = async (customerId: number) => {
     }
 
     const billsWithItems = await Promise.all((bills as Bill_in[]).map(async (bill: Bill_in) => {
-      // Get all item_bill_in records for this bill
-      const itemBillRecords = await db.getAllAsync('SELECT * FROM item_bill_in WHERE bill_in_id = ?', bill.id);
+      // Get all item_bill_in records for this bill with the correct quantity
+      const itemBillRecords = await db.getAllAsync(`
+        SELECT 
+          items.*, 
+          item_bill_in.quantity AS sold_quantity,
+          item_bill_in.price AS sold_price
+        FROM item_bill_in
+        JOIN items ON item_bill_in.item_id = items.id
+        WHERE bill_in_id = ?
+      `, bill.id);
       
-      // Get item details for each item in item_bill_in
-      const itemDetails = await Promise.all(itemBillRecords.map(async (itemBill: any) => {
-        const itemInfo = await db.getFirstAsync('SELECT * FROM items WHERE id = ?', itemBill.item_id);
-        return {
-          ...(itemBill || {}),  // Fallback to empty object if undefined
-          ...(itemInfo || {})   // Fallback to empty object if undefined
-        };
-      }));
-      
-      return { ...bill, items: itemDetails };
+      return { ...bill, items: itemBillRecords };
     }));
 
     // Get all payments made by the customer
     const payments = await db.getAllAsync('SELECT * FROM income WHERE customer_id = ?', customerId);
 
-
     return {
       customer,
       bills: billsWithItems,
       payments,
-      
       totalBills: billsWithItems.length,
       totalPayments: payments.length
     };

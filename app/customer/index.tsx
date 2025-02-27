@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/cutomers';
 import { Customer } from '../../src/entity/Customers';
 import { useRouter } from 'expo-router';
@@ -63,11 +63,7 @@ useEffect(() => {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
-    >
+   
       <View className='flex-1 w-[100%] items-center'>
         <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <TextInput placeholder="Name" value={name} onChangeText={setName} />
@@ -81,6 +77,8 @@ useEffect(() => {
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
         
+            <KeyboardAvoidingView keyboardVerticalOffset={100}
+            behavior="padding" className='flex-1 w-full items-center'>
         <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className=''>
             <TextInput
@@ -96,9 +94,10 @@ useEffect(() => {
             <View className='w-[35%] pl-5'><Text className='font-bold text-lg'> Action</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
-
+ <ScrollView>
           {filteredItems.map((record) => (
-            <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-2'>
+           
+            <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-2 '>
               <View className='w-[20%] items-center'><Text>{record.name}</Text></View>
               <View className='w-[20%] items-center'><Text>{record.line}</Text></View>
               <View>
@@ -124,9 +123,11 @@ useEffect(() => {
               </View>
             </View>
           ))}
+          </ScrollView>
         </View>
+          </KeyboardAvoidingView>
       </View>
-    </KeyboardAvoidingView>
+   
   );
 };
 
