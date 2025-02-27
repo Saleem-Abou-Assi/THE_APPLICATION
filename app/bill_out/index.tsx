@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
-import { Button, TextInput, Searchbar } from 'react-native-paper';
-import { initBillOut, createBillOut, createItem } from '../../src/crud/bill_out';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { initBillOut, createBillOut } from '../../src/crud/bill_out';
 import { Traders } from '@/src/entity/Traders';
 import { Item } from '@/src/entity/Items';
 
@@ -9,7 +8,6 @@ interface BillItem {
     itemId: number;
     quantity: number;
     price: number;
-    note?: string;
 }
 
 interface BillData {
@@ -22,11 +20,6 @@ interface BillData {
     new_balance: number;
 }
 
-interface ItemSuggestion {
-    id: number;
-    name: string;
-}
-
 const BillOutPage = () => {
     const [traders, setTraders] = useState<Traders[]>([]);
     const [items, setItems] = useState<Item[]>([]);
@@ -36,14 +29,15 @@ const BillOutPage = () => {
     const [selectedTraderId, setSelectedTraderId] = useState<number>(0);
     const [selectedItems, setSelectedItems] = useState<BillItem[]>([]);
     const [payment, setPayment] = useState<number>(0);
-    const [newItemName, setNewItemName] = useState('');
+    const [discount, setDiscount] = useState<number>(0);
     const [itemSearch, setItemSearch] = useState<string>('');
-    const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-    const [filteredItems, setFilteredItems] = useState<ItemSuggestion[]>([]);
     
-    // Modal visibility states
+    // New state for modal visibility
     const [traderModalVisible, setTraderModalVisible] = useState(false);
     const [itemModalVisible, setItemModalVisible] = useState(false);
+    const [selectedTrader, setSelectedTrader] = useState<Traders | null>(null);
+    const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+    const [filteredItems, setFilteredItems] = useState<Item[]>([]);
 
     // Initialize bill data
     useEffect(() => {
@@ -80,54 +74,18 @@ const BillOutPage = () => {
         const totalCost = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
         const selectedTrader = traders.find(t => t.id === selectedTraderId);
         const oldBalance = selectedTrader?.balance || 0;
-        const newBalance = oldBalance - totalCost + payment;
+        const newBalance = oldBalance - totalCost + payment - discount;
         
         return { totalCost, oldBalance, newBalance };
     };
 
-    const handleAddNewItem = async (itemData: BillItem) => {
-        try {
-            // Create new item in database
-            const newItem = await createItem({
-                name: newItemName,
-                b_price: itemData.price,
-                s_price: itemData.price,
-                quantity: 0 // Initial quantity is 0 since it's a new item
-            });
-            
-            // Update items list
-            const updatedItems = await initBillOut();
-            setItems(updatedItems.items as Item[]);
-            
-            // Update selected item with new ID
-            return newItem.id;
-        } catch (error) {
-            console.error('Error adding new item:', error);
-            alert('Failed to add new item');
-            return null;
-        }
-    };
-
     const handleSubmit = async () => {
-        // Check for new items and create them
-        const updatedItems = await Promise.all(selectedItems.map(async (item) => {
-            if (item.itemId === 0 && newItemName) {
-                const newId = await handleAddNewItem(item);
-                if (newId) {
-                    return { ...item, itemId: newId };
-                }
-            }
-            return item;
-        }));
-        
-        setSelectedItems(updatedItems);
-
         const { totalCost, oldBalance, newBalance } = calculateTotals();
         
         const billData: BillData = {
             bill_out_id: Date.now(),
             trader_id: selectedTraderId,
-            items_array: updatedItems,
+            items_array: selectedItems,
             pay: payment,
             total_cost: totalCost,
             old_balance: oldBalance,
@@ -150,42 +108,23 @@ const BillOutPage = () => {
         }
     };
 
-    const handleItemSearch = (text: string, index: number) => {
+    const handleItemSearch = (text: string) => {
         setItemSearch(text);
         if (text.length > 0) {
             const filtered = items.filter(item =>
                 item.name.toLowerCase().includes(text.toLowerCase())
             );
             setFilteredItems(filtered);
-            setShowSuggestions(true);
         } else {
             setFilteredItems([]);
-            setShowSuggestions(false);
         }
     };
 
-    const handleItemSelect = (index: number, suggestion: ItemSuggestion) => {
-        const selectedItem = items.find(item => item.id === suggestion.id);
-        if (selectedItem) {
-            updateItem(index, 'itemId', selectedItem.id);
-            setItemSearch(selectedItem.name);
-            setShowSuggestions(false);
+    const handleItemSelect = (item: Item) => {
+        if (selectedItemIndex !== null) {
+            updateItem(selectedItemIndex, 'itemId', item.id);
+            updateItem(selectedItemIndex, 'price', item.s_price);
         }
-    };
-
-    const openTraderModal = () => {
-        setTraderModalVisible(true);
-    };
-
-    const closeTraderModal = () => {
-        setTraderModalVisible(false);
-    };
-
-    const openItemModal = () => {
-        setItemModalVisible(true);
-    };
-
-    const closeItemModal = () => {
         setItemModalVisible(false);
     };
 
@@ -193,167 +132,216 @@ const BillOutPage = () => {
         return <Text>Loading...</Text>;
     }
 
+    const { totalCost, oldBalance, newBalance } = calculateTotals();
+
     return (
         <ScrollView className='flex-1 w-full overflow-y-scroll'>
-            <View className='flex-1 w-[100%] items-center'>
-                <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
-                    <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
+            <KeyboardAvoidingView 
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={100}
+            >
+                <View className='flex-1 w-[100%] items-center'>
+                    <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
+                        <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
 
-                    <Button mode="contained" onPress={openTraderModal} style={{ marginVertical: 10 }}>
-                        Select Trader
-                    </Button>
+                        <TouchableOpacity
+                            className='bg-primary p-2 rounded-md mb-4 w-36 items-center'
+                            onPress={() => setTraderModalVisible(true)}
+                        >
+                            <Text className='text-white font-bold'>{selectedTrader ? selectedTrader.name : "Select Trader"}</Text>
+                        </TouchableOpacity>
 
-                    <Text className='text-center mb-2'>Selected Trader: {selectedTraderId ? traders.find(t => t.id === selectedTraderId)?.name : "None"}</Text>
-
-                    <Button mode="contained" onPress={addItemToBill} style={{ marginVertical: 10 }}>
-                        Add Item
-                    </Button>
-
-                    {selectedItems.map((item, index) => (
-                        <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-                            <View style={{ flex: 2, position: 'relative' }}>
-                                <Searchbar
-                                    placeholder="Search item"
-                                    onChangeText={(text) => handleItemSearch(text, index)}
-                                    value={itemSearch}
-                                    style={{ elevation: 0, backgroundColor: '#f5f5f5' }}
-                                />
-                                {showSuggestions && (
-                                    <View style={{
-                                        position: 'absolute',
-                                        top: 60,
-                                        left: 0,
-                                        right: 0,
-                                        backgroundColor: 'white',
-                                        borderRadius: 4,
-                                        elevation: 4,
-                                        zIndex: 1000,
-                                        maxHeight: 200,
-                                    }}>
-                                        <ScrollView nestedScrollEnabled={true} style={{ padding: 10 }}>
-                                            {filteredItems.map((suggestion) => (
-                                                <TouchableOpacity
-                                                    key={suggestion.id}
-                                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
-                                                    onPress={() => handleItemSelect(index, suggestion)}
-                                                >
-                                                    <Text>{suggestion.name}</Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </ScrollView>
-                                    </View>
-                                )}
+                        {/* Trader Selection Modal */}
+                        <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={traderModalVisible}
+                            onRequestClose={() => setTraderModalVisible(false)}
+                        >
+                            <View className='flex-1 justify-center'>
+                                <View className='bg-white rounded-t-lg p-4 shadow-lg'>
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md mb-4"
+                                        placeholder="Search Trader"
+                                        value={itemSearch}
+                                        onChangeText={handleItemSearch}
+                                    />
+                                    <ScrollView>
+                                        {traders.map(trader => (
+                                            <TouchableOpacity
+                                                key={trader.id}
+                                                onPress={() => {
+                                                    setSelectedTrader(trader);
+                                                    setSelectedTraderId(trader.id);
+                                                    setTraderModalVisible(false);
+                                                }}
+                                            >
+                                                <Text className='p-4'>{trader.name}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                    <TouchableOpacity
+                                        onPress={() => setTraderModalVisible(false)}
+                                        className='mt-4 bg-red-500 p-2 rounded-md'
+                                    >
+                                        <Text className='text-white text-center'>Close</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
+                        </Modal>
 
-                            <TextInput
-                                keyboardType="numeric"
-                                value={item.quantity.toString()}
-                                onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
-                                style={{ flex: 1, marginHorizontal: 5 }}
-                                label="Qty"
-                            />
+                        <TouchableOpacity
+                            className='w-32 self-center bg-[#FCa311] p-2 rounded-md mb-4'
+                            onPress={addItemToBill}
+                        >
+                            <Text className='text-center font-bold'>Add Item</Text>
+                        </TouchableOpacity>
 
-                            <TextInput
-                                keyboardType="numeric"
-                                value={item.price.toString()}
-                                onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                                style={{ flex: 1, marginHorizontal: 5 }}
-                                label="Price"
-                            />
+                        <View className='flex-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 gap-1'>
+                            <Text className='font-bold w-[37%] text-center'>المادة</Text>
+                            <Text className='font-bold w-20 text-center'>الكمية</Text>
+                            <Text className='font-bold w-20 text-center'>المبيع</Text>
+                            <Text className='font-bold w-20 text-center'>المجموع</Text>
+                        </View>   
 
-                            <TextInput
-                                value={item.note || ''}
-                                onChangeText={(value) => updateItem(index, 'note', value)}
-                                style={{ flex: 1, marginHorizontal: 5 }}
-                                label="Note"
-                            />
+                        {selectedItems.map((item, index) => (
+                            <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                                <View className='flex-row items-center gap-2 mb-4'>
+                                    <View style={{ flex: 2 }}>
+                                        <TouchableOpacity
+                                            className='bg-gray-200 p-2 rounded-md'
+                                            onPress={() => {
+                                                setSelectedItemIndex(index);
+                                                setItemModalVisible(true);
+                                            }}
+                                        >
+                                            <Text className='text-center'>{item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-16 text-center"
+                                        keyboardType="numeric"
+                                        value={item.quantity.toString()}
+                                        onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
+                                        placeholder="Qty"
+                                    />
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        keyboardType="numeric"
+                                        value={item.price.toString()}
+                                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                        placeholder="Price"
+                                    />
+                                    <TouchableOpacity
+                                        className='bg-red-500 p-1 rounded-md'
+                                        onPress={() => removeItem(index)}
+                                    >
+                                        <Text className='text-white'> X </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ))}
 
-                            <Button onPress={() => removeItem(index)}>Remove</Button>
+                        {/* Item Selection Modal */}
+                        <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={itemModalVisible}
+                            onRequestClose={() => setItemModalVisible(false)}
+                        >
+                            <View className='flex-1 justify-center'>
+                                <View className='bg-white rounded-t-lg p-4 shadow-lg'>
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md mb-4"
+                                        placeholder="Search Item"
+                                        value={itemSearch}
+                                        onChangeText={handleItemSearch}
+                                    />
+                                    <ScrollView>
+                                        {items.filter(item => item.name.toLowerCase().includes(itemSearch.toLowerCase())).map(item => (
+                                            <TouchableOpacity
+                                                key={item.id}
+                                                onPress={() => handleItemSelect(item)}
+                                            >
+                                                <Text className='p-4'>{item.name}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                    <TouchableOpacity
+                                        onPress={() => setItemModalVisible(false)}
+                                        className='mt-4 bg-red-500 p-2 rounded-md'
+                                    >
+                                        <Text className='text-white text-center'>Close</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+
+                        {/* Display Previous Balance */}
+                        <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
+                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>{selectedTrader ? selectedTrader.balance : ""}</Text>
+                            <Text className='font-bold w-28 text-center mb-3'>رصيد سابق:</Text>
                         </View>
-                    ))}
 
-                    <TextInput
-                        label="Payment"
-                        keyboardType="numeric"
-                        value={payment.toString()}
-                        onChangeText={(value) => setPayment(Number(value))}
-                        style={{ marginVertical: 10 }}
-                    />
+                        {/* Display Total Bill Amount */}
+                        <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
+                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
+                                {totalCost}
+                            </Text>
+                            <Text className='font-bold w-28 text-center mb-3'>مجموع الفاتورة:</Text>
+                        </View>
 
-                    <Button 
-                        mode="contained" 
-                        onPress={handleSubmit}
-                        disabled={!selectedTraderId || selectedItems.length === 0}
-                        style={{ marginVertical: 20 }}
-                    >
-                        Create Bill
-                    </Button>
-                </View>
-            </View>
-
-            {/* Trader Selection Modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={traderModalVisible}
-                onRequestClose={closeTraderModal}
-            >
-                <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ backgroundColor: 'white', margin: 20, borderRadius: 10, padding: 20 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Select Trader</Text>
-                        <ScrollView>
-                            {traders.map(trader => (
-                                <TouchableOpacity
-                                    key={trader.id}
-                                    onPress={() => {
-                                        setSelectedTraderId(trader.id);
-                                        closeTraderModal();
+                        {/* Discount and Payment Inputs */}
+                        <View className='flex-1 flex-row w-full justify-center items-center mt-1'>
+                            <View className='flex-1 flex-row w-[45%] items-center'>
+                                <TextInput
+                                    className="bg-gray-200 p-2 rounded-md mb-4 w-[50%] text-center"
+                                    placeholder="Discount"
+                                    keyboardType="numeric"
+                                    value={discount.toString()}
+                                    onChangeText={(value) => {
+                                        const numericValue = Number(value);
+                                        if (!isNaN(numericValue) && numericValue >= 0) {
+                                            setDiscount(numericValue);
+                                        }
                                     }}
-                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
-                                >
-                                    <Text>{trader.name}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                        <Button onPress={closeTraderModal} style={{ marginTop: 10 }}>Close</Button>
+                                />
+                                <Text className='font-bold w-20 text-center mb-3'>خصم:</Text>
+                            </View>
+                            <View className='flex-1 flex-row w-[45%] items-center justify-center'>
+                                <TextInput
+                                    className="bg-gray-200 p-2 rounded-md mb-4 w-[70%] text-center"
+                                    placeholder="Payment"
+                                    keyboardType="numeric"
+                                    value={payment.toString()}
+                                    onChangeText={(value) => setPayment(Number(value))}
+                                />
+                                <Text className='font-bold w-36 text-center mb-3 mr-3'>المدفوعات:</Text>
+                            </View>
+                        </View>
+
+                        {/* Current Balance Display */}
+                        <View className='h-0.5 bg-gray-500 w-full mb-3'></View>
+                        <View className='flex-1 flex-row w-full items-center'>
+                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>
+                                {totalCost - discount}
+                            </Text>
+                            <Text className='font-bold w-28 text-center mb-3'>الرصيد الحالي:</Text>
+                        </View>
+
+                        <TouchableOpacity 
+                            className='w-full bg-blue-500 p-2 rounded-md'
+                            onPress={handleSubmit}
+                            disabled={!selectedTraderId || selectedItems.length === 0}
+                        >
+                            <Text className='text-center text-white font-bold'>Create Bill</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
-
-            {/* Item Selection Modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={itemModalVisible}
-                onRequestClose={closeItemModal}
-            >
-                <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ backgroundColor: 'white', margin: 20, borderRadius: 10, padding: 20 }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Select Item</Text>
-                        <ScrollView>
-                            {items.map(item => (
-                                <TouchableOpacity
-                                    key={item.id}
-                                    onPress={() => {
-                                        // Handle item selection logic here
-                                        closeItemModal();
-                                    }}
-                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#eee' }}
-                                >
-                                    <Text>{item.name}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                        <Button onPress={closeItemModal} style={{ marginTop: 10 }}>Close</Button>
-                    </View>
-                </View>
-            </Modal>
+            </KeyboardAvoidingView>
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    // You can keep or modify styles as needed
-});
 
 export default BillOutPage;
