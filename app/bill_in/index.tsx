@@ -116,6 +116,24 @@ const BillInPage = () => {
     };
 
     const handleSubmit = async () => {
+        // Check item quantities
+        let hasInsufficientStock = false;
+        const insufficientItems: string[] = [];
+
+        for (const selectedItem of selectedItems) {
+            const item = items.find(i => i.id === selectedItem.itemId);
+            if (item && selectedItem.quantity > item.quantity) {
+                hasInsufficientStock = true;
+                insufficientItems.push(item.name);
+            }
+        }
+
+        if (hasInsufficientStock) {
+            alert(`كمية غير متوفرة: ${insufficientItems.join(', ')}`);
+            return;
+        }
+
+        // Proceed with bill creation if all quantities are valid
         const { totalCost, oldBalance, newBalance } = calculateTotals();
         
         // Ensure items have correct prices
