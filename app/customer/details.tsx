@@ -1,9 +1,10 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { getCustomerDetails } from '../../src/crud/cutomers';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-export default function CustomerDetails() {
+export const CustomerDetails = () => {
   const { customerId } = useLocalSearchParams();
   
 
@@ -80,7 +81,9 @@ export default function CustomerDetails() {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default CustomerDetails;
 
 const styles = StyleSheet.create({
   container: {
