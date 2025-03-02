@@ -233,68 +233,61 @@ const BillInPage = () => {
                         <Text className='font-bold w-20 text-center'>الكمية</Text>
                         <Text className='font-bold w-20 text-center'>المبيع</Text>
                         <Text className='font-bold w-20 text-center'>المجموع</Text>
-                        </View>  
-                                      
-                    {selectedItems.map((item, index) => (
-                        <View className='bg-gray-100' key={`item-container-${index}`}>
-                        <View key={`item-row-${index}`} className='flex-row items-center gap-2 m-2'>
-                            <View className='flex-1 w-[25%]'>
-                                <TouchableOpacity
-                                    className='bg-gray-200 p-2 rounded-md'
-                                    onPress={() => {
-                                        setSelectedItemIndex(index);
-                                        setItemModalVisible(true);
-                                    }}
-                                >
-                                    <Text className='text-center'>{item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}</Text>
-                                </TouchableOpacity>
-                                
+                        </View>                
+                    {selectedItems.map((item, index) => {
+                        const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
+                        const itemTotal = item.quantity * itemPrice;
+
+                        return (
+                            <View className='bg-gray-100' key={`item-container-${index}`}>
+                                <View key={`item-row-${index}`} className='flex-row items-center gap-2 mb-4'>
+                                    <View className='flex-1 w-[25%]'>
+                                        <TouchableOpacity
+                                            className='bg-gray-200 p-2 rounded-md'
+                                            onPress={() => {
+                                                setSelectedItemIndex(index);
+                                                setItemModalVisible(true);
+                                            }}
+                                        >
+                                            <Text>{item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-16 text-center"
+                                        keyboardType="numeric"
+                                        value={item.quantity.toString()}
+                                        onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
+                                        placeholder="Qty"
+                                    />
+
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        keyboardType="numeric"
+                                        value={itemPrice.toString()}
+                                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                        placeholder="Price"
+                                    />
+
+                                    <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center">
+                                        {itemTotal.toFixed(2)}
+                                    </Text>
+
+                                    <TouchableOpacity
+                                        className='bg-red-500 p-1 rounded-md'
+                                        onPress={() => removeItem(index)}
+                                    >
+                                        <Text className='text-white'> X </Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-
-                            <TextInput
-                                className="bg-gray-200 p-2 rounded-md flex-1 max-w-16 text-center"
-                                keyboardType="numeric"
-                                value={item.quantity.toString()}
-                                onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
-                                placeholder="Qty"
-                            />
-                            
-
-                            <TextInput
-                                className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
-                                keyboardType="numeric"
-                                value={item.price > 0 ? item.price.toString() : (items.find(i => i.id === item.itemId)?.s_price.toString() || "")}
-                                onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                                placeholder="Price"
-                            />
-
-                           <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center">
-                               {item.itemId ? (items.find(i => i.id === item.itemId)?.s_price || 0) * item.quantity : 0}
-                           </Text>
-                            <TouchableOpacity
-                                className='bg-red-500 p-1 rounded-md'
-                                onPress={() => removeItem(index)}
-                            >
-                                <Text className='text-white'> X </Text>
-                            </TouchableOpacity>
-                            
-                        </View>
-                        </View>
-                    ))}
+                        );
+                    })}
                     <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
-                   <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>{selectedCustomer ? selectedCustomer.balance :""}</Text>
-                        <Text className='font-bold w-28 text-center mb-3'>رصيد سابق:</Text>
+                   <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>{selectedCustomer ? selectedCustomer.balance :""}</Text>
+                        <Text className='font-bold w-20 text-center mb-3'>رصيد سابق:</Text>
                     </View>
-                    <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
-                        <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
-                            {selectedItems.reduce((total, item) => {
-                                const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
-                                return total + (price * item.quantity);
-                            }, 0)}
-                        </Text>
-                        <Text className='font-bold w-28 text-center mb-3'>مجموع الفاتورة:</Text>
-                    </View>
-                    <View className='flex-1 flex-row w-full justify-center items-center mt-1 pr-1'>
+                    <View className='flex-1 flex-row w-full justify-center items-center mt-1'>
                     <View className='flex-1 flex-row w-[45%] items-center'>
                         <TextInput
                         className="bg-orange-200 p-2 rounded-md mb-4 w-[50%] text-center"
@@ -330,8 +323,17 @@ const BillInPage = () => {
                                 return total + (price * item.quantity);
                             }, 0) - discount}
                         </Text>
-                        <Text className='font-bold w-28 text-center mb-3'>الرصيد الحالي:</Text>
-                    </View>
+                        <Text className='font-bold w-28 text-center mb-3'>
+                            الرصيد الحالي: {
+                                (selectedCustomer?.balance || 0) + 
+                                selectedItems.reduce((total, item) => {
+                                    const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
+                                    return total + (price * item.quantity);
+                                }, 0) - 
+                                payment - 
+                                discount
+                            }
+                        </Text>                    </View>
                     <TouchableOpacity
                         className='w-full bg-blue-500 p-2 rounded-md'
                         onPress={handleSubmit}

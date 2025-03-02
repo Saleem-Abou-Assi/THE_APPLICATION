@@ -21,13 +21,13 @@ export const createRecord = async (name: string, line: string, balance: number) 
   console.log(result.lastInsertRowId, result.changes);
   
 };
-
+ 
 // Read all customer records
-export const getRecords = async (callback: (records: any[]) => void) => {
+export const getRecords = async (callback: (customers: any[]) => void) => {
+    
   const records = await db.getAllAsync('SELECT * FROM customers');
-  callback(records);
+    callback(records);
 };
-
 // Update an existing customer record
 export const updateRecord = async (id: number, name: string, line: string, balance: number) => {
   const result = await db.runAsync('UPDATE customers SET name = ?, line = ?, balance = ? WHERE id = ?', name, line, balance, id);
