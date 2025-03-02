@@ -157,7 +157,7 @@ const BillOutPage = () => {
                         </View>
                         {/* Trader Selection Modal */}
                         <Modal
-                            animationType="slide"
+                            animationType="fade"
                             transparent={true}
                             visible={traderModalVisible}
                             onRequestClose={() => setTraderModalVisible(false)}
@@ -327,7 +327,7 @@ const BillOutPage = () => {
                     </View>
                 </View>
                     <Modal
-                            animationType="slide"
+                            animationType="fade"
                             transparent={true}
                             visible={itemModalVisible}
                             onRequestClose={() => setItemModalVisible(false)}

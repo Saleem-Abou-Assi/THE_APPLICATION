@@ -98,14 +98,16 @@ export default function CustomerDetails() {
             </View>
             <View className='w-full h-0.5 bg-gray-200 mt-1'></View>
             <Text className='font-bold w-full text-center p-2'>محتويات الفاتورة:</Text>
-            <View className='felx-1 flex-row w-full'>
-              <Text>اسم المادة</Text>
-              <Text>الكمية المباعة</Text>
-              <Text>سعر المبيع</Text>
+            <View className='felx-1 flex-row w-full bg-gray-100'>
+              <Text className='w-[34%] text-center font-bold '>اسم المادة</Text>
+              <Text  className='w-[34%] text-center font-bold '>الكمية المباعة</Text>
+              <Text  className='w-[34%] text-center font-bold '>سعر المبيع</Text>
             </View>
             {bill.items.map((item: any) => (
-              <View key={item.item_id} className='flex-1 flex-row w-full'>
-                <Text className='w-[50%] text-center p-2'>{item.name} - {item.sold_quantity} x {item.sold_price}</Text>
+              <View key={item.item_id} className='flex-1 flex-row w-full bg-gray-50'>
+                <Text className='w-[34%] text-center p-2 border-r-gray-50'>{item.name}</Text>
+                <Text className='w-[34%] text-center p-2'>{item.sold_quantity}</Text>
+                <Text className='w-[34%] text-center p-2'>{item.sold_price}</Text>
               </View>
             ))}
           </View>
@@ -113,15 +115,15 @@ export default function CustomerDetails() {
       </View>
 
       <View>
-        <Text className='text-2xl font-bold m-1 text-white'>Payments</Text>
+        <Text className='text-2xl font-bold m-1 text-black text-center'>المدفوعات</Text>
         {customerData.payments.map((payment: any) => (
-          <View key={payment.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
-            <View className='flex-1 flex-row-reverse w-full '>
-              <Text className='font-bold w-[50%] text-center p-1'>Amount:</Text>
+          <View key={payment.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-1'>
+            <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
+              <Text className='font-bold w-[50%] text-center p-1'>دفع:</Text>
               <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.amount}</Text>
             </View>
-            <View className='flex-1 flex-row-reverse w-full '>
-              <Text className='font-bold w-[50%] text-center p-1'>Date:</Text>
+            <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
+              <Text className='font-bold w-[50%] text-center p-1'>بتاريخ:</Text>
               <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.created_at}</Text>
             </View>
           </View>
