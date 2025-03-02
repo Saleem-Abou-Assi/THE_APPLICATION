@@ -44,6 +44,7 @@ export const CustomerDetails = () => {
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.title}>Customer Information</Text>
+        <Text>ID: {customerData.customer.id}</Text>
         <Text>Name: {customerData.customer.name}</Text>
         <Text>Line: {customerData.customer.line}</Text>
         <Text>Balance: {customerData.customer.balance}</Text>

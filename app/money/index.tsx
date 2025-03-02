@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { createIncome, createPayment, getIncome, getPayments } from '../../src/crud/money';
+import { createIncome, createPayment, initMoney } from '../../src/crud/money';
+import { Customer } from '@/src/entity/Customers';
+import {Traders} from '@/src/entity/Traders';
+
 
 const MoneyPage = () => {
   const [amount, setAmount] = useState('');
@@ -8,6 +11,27 @@ const MoneyPage = () => {
   const [type, setType] = useState<'income' | 'payment'>('income');
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [traderId, setTraderId] = useState<number | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [traders, setTraders] = useState<Traders[]>([]);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const { customers, traders } = await initMoney();
+            setCustomers(customers as Customer[]);
+            setTraders(traders as Traders[]);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchData();
+}, []);
+
 
   const handleSubmit = async () => {
     const numericAmount = parseFloat(amount);
@@ -62,6 +86,7 @@ const MoneyPage = () => {
       />
 
       {type === 'income' && (
+        // display the modal of the search to show Customers
         <TextInput
           style={styles.input}
           placeholder="Customer ID (optional)"
@@ -72,6 +97,7 @@ const MoneyPage = () => {
       )}
 
       {type === 'payment' && (
+        // display the modal of the search to show Traders
         <TextInput
           style={styles.input}
           placeholder="Trader ID (optional)"

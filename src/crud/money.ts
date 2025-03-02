@@ -1,9 +1,26 @@
 import * as SQLite from 'expo-sqlite';
+import { useCallback, useState } from 'react';
 
 // Open or create a SQLite database
 const db = SQLite.openDatabaseSync('DataBase.sqlite');
 
 // Income CRUD operations
+
+
+export const initMoney = async()=>{
+    
+    const customersResult = await db.getAllAsync('SELECT * FROM customers');
+    const customers = customersResult ?? [];
+
+    
+    const traderResult = await db.getAllAsync('SELECT * FROM traders');
+    const traders = traderResult ?? [];
+    return {
+        customers,
+        traders
+    }
+}
+
 export const createIncome = async(amount:number, customer_id:number|null, note:string) => {
     const result = await db.runAsync(
         'INSERT INTO income (amount, customer_id, note) VALUES (?, ?, ?)', 
@@ -31,3 +48,36 @@ export const getPayments = async (callback: (payments: any[]) => void) => {
     callback(payments);
 };
     
+
+
+interface Income {
+    customer_id: number;
+    amount: number;
+    note:string;
+}
+
+interface Payment  {
+    trader_id: number;
+    amount: number;
+    note:string;
+}
+
+export const BOX = async(useCallback:(box:number)=>void)=>{
+
+    const [income,setIncome] = useState<Income[]>([]);
+    const [payment,setPayment] = useState<Payment[]>([]);
+
+    const fetchData = () => {
+        getIncome((data) => {
+        
+          setIncome(data);
+        });
+
+        getPayments((data)=>{
+            setPayment(data);
+        })
+      };
+    
+      
+
+}
