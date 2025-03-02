@@ -1,10 +1,16 @@
 import Button from '@/components/Button';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View,Text } from 'react-native';
 import "../global.css";
+import { BOX } from '../src/crud/money';
 
 export default function App() {
-  
+  const [boxValue, setBoxValue] = useState(0);
+
+  useEffect(() => {
+    BOX(setBoxValue);
+  }, []);
+
   return (
     // <View >
     //   <Button target='/customer' label='customer' theme='primary'></Button>
@@ -16,7 +22,7 @@ export default function App() {
                 </View>  
                 
                 <View style={styles.box}>  
-                    <Text style={styles.boxText}>الصندوق : 25000</Text>  
+                    <Text style={styles.boxText}>الصندوق : {boxValue}</Text>  
                 </View>  
 
             </View>  

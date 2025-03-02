@@ -63,21 +63,26 @@ interface Payment  {
 }
 
 export const BOX = async(useCallback:(box:number)=>void)=>{
-
     const [income,setIncome] = useState<Income[]>([]);
     const [payment,setPayment] = useState<Payment[]>([]);
 
     const fetchData = () => {
         getIncome((data) => {
-        
-          setIncome(data);
+            setIncome(data);
+            calculateBox(data, payment);
         });
 
         getPayments((data)=>{
             setPayment(data);
+            calculateBox(income, data);
         })
-      };
-    
-      
+    };
+
+    const calculateBox = (incomes: Income[], payments: Payment[]) => {
+        const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
+        const totalPayments = payments.reduce((sum, item) => sum + item.amount, 0);
+        const box = totalIncome - totalPayments;
+        useCallback(box);
+    };
 
 }
