@@ -1,43 +1,38 @@
 import Button from '@/components/Button';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View,Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import "../global.css";
-import { BOX } from '../src/crud/money';
+import { useBox } from '../src/crud/money';
 
 export default function App() {
-  const [boxValue, setBoxValue] = useState(0);
-
-  useEffect(() => {
-    BOX(setBoxValue);
-  }, []);
+  const boxValue = useBox();
 
   return (
     // <View >
     //   <Button target='/customer' label='customer' theme='primary'></Button>
     // </View>
     <>
-                <View style={styles.container}>  
-                <View style={styles.header}>  
-                    <Text style={styles.headerText}>App Name</Text>  
-                </View>  
-                
-                <View style={styles.box}>  
-                    <Text style={styles.boxText}>الصندوق : {boxValue}</Text>  
-                </View>  
-
-            </View>  
-            <View style={styles.buttonContainer}>  
-                     <Button target='/customer' label='customer' theme='primary'></Button>
-                     <Button target='/item' label='items' theme='primary'></Button>
-                     <Button target='/traders' label='traders' theme='primary'></Button>
-                     <Button target='/bill_in' label='مبيع' theme='primary'></Button>
-                     <Button target='/bill_out' label='شراء' theme='primary'></Button>
-                     <Button target='/money' label='مقبوضات\مدفوعات' theme='primary'></Button>
-
-            </View> 
-            </> 
+      <View style={styles.container}>  
+        <View style={styles.header}>  
+          <Text style={styles.headerText}>App Name</Text>  
+        </View>  
+        
+        <View style={styles.box}>  
+          <Text style={styles.boxText}>الصندوق : {boxValue}</Text>  
+        </View>  
+      </View>  
+      <View style={styles.buttonContainer}>  
+        <Button target='/customer' label='customer' theme='primary'></Button>
+        <Button target='/item' label='items' theme='primary'></Button>
+        <Button target='/traders' label='traders' theme='primary'></Button>
+        <Button target='/bill_in' label='مبيع' theme='primary'></Button>
+        <Button target='/bill_out' label='شراء' theme='primary'></Button>
+        <Button target='/money' label='مقبوضات\مدفوعات' theme='primary'></Button>
+      </View> 
+    </> 
   );
 }
+
 const styles = StyleSheet.create({  
     container: {  
         flexDirection: 'column',  

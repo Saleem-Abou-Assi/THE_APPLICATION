@@ -1,6 +1,6 @@
 import React, { useState ,useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { createIncome, createPayment, initMoney } from '../../src/crud/money';
+import { createIncome, createPayment, initMoney, useBox } from '../../src/crud/money';
 import { Customer } from '@/src/entity/Customers';
 import {Traders} from '@/src/entity/Traders';
 
@@ -14,6 +14,7 @@ const MoneyPage = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [traders, setTraders] = useState<Traders[]>([]);
   const [loading, setLoading] = useState(true);
+  const box = useBox();
 
 
   useEffect(() => {
@@ -115,6 +116,8 @@ const MoneyPage = () => {
       />
 
       <Button title="Submit" onPress={handleSubmit} />
+
+      
     </View>
   );
 };

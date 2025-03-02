@@ -42,6 +42,7 @@ export default function TraderDetails() {
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.title}>Trader Information</Text>
+        <Text>Name: {traderData.trader.id}</Text>
         <Text>Name: {traderData.trader.name}</Text>
         <Text>Balance: {traderData.trader.balance}</Text>
       </View>
