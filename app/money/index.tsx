@@ -86,7 +86,7 @@ const MoneyPage = () => {
       />
 
       {type === 'income' && (
-        // display the modal of the search to show Customers
+        
         <TextInput
           style={styles.input}
           placeholder="Customer ID (optional)"
