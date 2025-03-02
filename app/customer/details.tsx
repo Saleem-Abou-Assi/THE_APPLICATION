@@ -40,77 +40,96 @@ export default function CustomerDetails() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.title}>Customer Information</Text>
-        <Text>Name: {customerData.customer.name}</Text>
-        <Text>Line: {customerData.customer.line}</Text>
-        <Text>Balance: {customerData.customer.balance}</Text>
-        <Text>Total Bills: {customerData.totalBills}</Text>
-        <Text>Total Payments: {customerData.totalPayments}</Text>
-      </View>
+    <ScrollView className='flex-1 flex-col w-full bg-white'>
+      <View className='flex-1 flex-col bg-primary p-2 items-center m-2 rounded-lg'>
+        <Text className='text-2xl font-bold m-1 text-white'>معلومات العميل</Text>
+        <View className='bg-white w-[70%] flex-1 flex-col items-start rounded-xl p-2 m-2'>
 
-      <View style={styles.section}>
-        <Text style={styles.title}>Bills</Text>
+          <View className='flex-1 flex-row-reverse w-full p-1'>
+             <Text className='font-bold w-[50%] text-center p-1'>الاسم:</Text>
+             <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{customerData.customer.name}</Text>
+          </View>
+
+          <View className='flex-1 flex-row-reverse w-full  p-1'>
+            <Text className='font-bold w-[50%] text-center p-1' >الخط:</Text>
+             <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{customerData.customer.line}</Text>
+          </View>
+
+          <View className='flex-1 flex-row-reverse w-full  p-1'>
+            <Text className='font-bold w-[50%] text-center p-1'>الرصيد:</Text>
+            <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{customerData.customer.balance}</Text>
+          </View>
+
+          <View className='flex-1 flex-row-reverse w-full  p-1'>
+            <Text className='font-bold w-[50%] text-center p-1'>عدد الفواتير:</Text>
+            <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{customerData.totalBills}</Text>
+          </View>
+
+          <View className='flex-1 flex-row-reverse w-full  p-1'>
+            <Text className='font-bold w-[50%] text-center p-1'>عدد الدفعات:</Text>
+            <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{customerData.totalPayments}</Text>
+          </View>
+        </View>
+      </View>
+      <View className='bg-white w-full'>
+      <View className='flex-1 flex-col bg-gray-200 p-2 m-2 rounded-lg'>
+        <Text className='text-2xl font-bold m-1 text-[black] text-center'>الفواتير</Text>
         {customerData.bills.map((bill: any) => (
-          <View key={bill.id} style={styles.billContainer}>
-            <Text>Date: {bill.created_at}</Text>
-            <Text>Total Cost: {bill.total_cost}</Text>
-            <Text>Paid: {bill.pay}</Text>
-            <Text>Old Balance: {bill.old_balance}</Text>
-            <Text>New Balance: {bill.new_balance}</Text>
-            <Text>Items:</Text>
+          <View key={bill.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-2'>تاريخ الاصدار:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.created_at}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-2'>قيمة الفاتورة:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.total_cost}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-2'>المدفوعات:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.pay}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-2'>الرصيد السابق:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.old_balance}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-2'>الرصيد الحالي:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.new_balance}</Text>
+            </View>
+            <View className='w-full h-0.5 bg-gray-200 mt-1'></View>
+            <Text className='font-bold w-full text-center p-2'>محتويات الفاتورة:</Text>
+            <View className='felx-1 flex-row w-full'>
+              <Text>اسم المادة</Text>
+              <Text>الكمية المباعة</Text>
+              <Text>سعر المبيع</Text>
+            </View>
             {bill.items.map((item: any) => (
-              <View key={item.item_id} style={styles.itemContainer}>
-                <Text>{item.name} - {item.sold_quantity} x {item.sold_price}</Text>
+              <View key={item.item_id} className='flex-1 flex-row w-full'>
+                <Text className='w-[50%] text-center p-2'>{item.name} - {item.sold_quantity} x {item.sold_price}</Text>
               </View>
             ))}
           </View>
         ))} 
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.title}>Payments</Text>
+      <View>
+        <Text className='text-2xl font-bold m-1 text-white'>Payments</Text>
         {customerData.payments.map((payment: any) => (
-          <View key={payment.id} style={styles.paymentContainer}>
-            <Text>Amount: {payment.amount}</Text>
-            <Text>Date: {payment.created_at}</Text>
+          <View key={payment.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-1'>Amount:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.amount}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full '>
+              <Text className='font-bold w-[50%] text-center p-1'>Date:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.created_at}</Text>
+            </View>
           </View>
         ))}
+      </View>
       </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  billContainer: {
-    marginBottom: 15,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  itemContainer: {
-    marginLeft: 10,
-    marginTop: 5,
-  },
-  paymentContainer: {
-    marginBottom: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-});
+

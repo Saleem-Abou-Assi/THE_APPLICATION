@@ -226,8 +226,9 @@ const BillOutPage = () => {
                                                 setItemModalVisible(true);
                                             }}
                                         >
-                                              <Text className='text-center'>{item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}</Text>
-
+                                              <Text className='text-center'>
+                                                  {item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}
+                                              </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <TextInput
@@ -244,6 +245,13 @@ const BillOutPage = () => {
                                         onChangeText={(value) => updateItem(index, 'price', Number(value))}
                                         placeholder="Price"
                                     />
+                                    <TextInput
+                                      className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                      keyboardType="numeric"
+                                      value={item.price > 0 ? item.price.toString() : (items.find(i => i.id === item.itemId)?.s_price.toString() || "")}
+                                      onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                      placeholder="Price"
+                                  />
                                     <TouchableOpacity
                                         className='bg-red-500 p-1 rounded-md'
                                         onPress={() => removeItem(index)}
@@ -255,50 +263,16 @@ const BillOutPage = () => {
                         ))}
 
                         {/* Item Selection Modal */}
-                        <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={itemModalVisible}
-                            onRequestClose={() => setItemModalVisible(false)}
-                        >
-                            <TouchableWithoutFeedback onPress={() => setItemModalVisible(false)}>
-                                <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
-                                    <View className='bg-white rounded-lg p-4 shadow-lg w-[85%]'>
-                                        <TextInput
-                                            className="bg-gray-200 p-2 rounded-md mb-4"
-                                            placeholder="Search Item"
-                                            value={itemSearch}
-                                            onChangeText={handleItemSearch}
-                                        />
-                                        <ScrollView>
-                                            {items.filter(item => item.name.toLowerCase().includes(itemSearch.toLowerCase())).map(item => (
-                                                <TouchableOpacity
-                                                    key={item.id}
-                                                    onPress={() => handleItemSelect(item)}
-                                                >
-                                                    <Text className='p-4'>{item.name}</Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </ScrollView>
-                                        <TouchableOpacity
-                                            onPress={() => setItemModalVisible(false)}
-                                            className='mt-4 bg-red-500 p-2 rounded-md'
-                                        >
-                                            <Text className='text-white text-center'>Close</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </Modal>
+                    
 
                         {/* Display Previous Balance */}
-                        <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
+                        <View className='flex-1 flex-row w-full justify-center items-center mt-2 pl-1'>
                             <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>{selectedTrader ? selectedTrader.balance : ""}</Text>
                             <Text className='font-bold w-28 text-center mb-3'>رصيد سابق:</Text>
                         </View>
 
                         {/* Display Total Bill Amount */}
-                        <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
+                        <View className='flex-1 flex-row w-full justify-center items-center mt-2 pl-1'>
                             <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
                                 {totalCost}
                             </Text>
@@ -352,6 +326,46 @@ const BillOutPage = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                    <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={itemModalVisible}
+                            onRequestClose={() => setItemModalVisible(false)}
+                        >
+                            <TouchableWithoutFeedback onPress={() => setItemModalVisible(false)}>
+                                <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+                                    <View className='bg-white rounded-lg p-4 shadow-lg w-[85%]'>
+                                        <TextInput
+                                            className="bg-gray-200 p-2 rounded-md mb-4"
+                                            placeholder="Search Item"
+                                            value={itemSearch}
+                                            onChangeText={handleItemSearch}
+                                        />
+                                        <ScrollView>
+                                            {items.filter(item => item.name.toLowerCase().includes(itemSearch.toLowerCase())).map(item => (
+                                                <TouchableOpacity
+                                                    key={item.id}
+                                                     onPress={() => {
+                                            if (selectedItemIndex !== null) {
+                                                updateItem(selectedItemIndex, 'itemId', item.id);
+                                            }
+                                            setItemModalVisible(false);
+                                        }}
+                                                >
+                                                    <Text className='p-4'>{item.name}</Text>
+                                                </TouchableOpacity>
+                                            ))}
+                                        </ScrollView>
+                                        <TouchableOpacity
+                                            onPress={() => setItemModalVisible(false)}
+                                            className='mt-4 bg-red-500 p-2 rounded-md'
+                                        >
+                                            <Text className='text-white text-center'>Close</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </Modal>
             </KeyboardAvoidingView>
         </ScrollView>
     );

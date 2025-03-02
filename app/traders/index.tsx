@@ -57,13 +57,20 @@ const TradersComponent: React.FC = () => { // Updated component name
     
       <View className='flex-1 w-[100%] items-center'>
         <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} />
+          <View className='flex-row-reverse items-center '>
+            <Text className='text-center font-bold w-20'>الاسم:</Text>
+          <TextInput placeholder="Name" value={name} onChangeText={setName} className='w-[80%] bg-gray-100 rounded-lg ' />
+          </View>
+          <View className='flex-row-reverse items-center'>
+          <Text className='text-center font-bold w-20'>الرصيد:</Text>
           <TextInput 
             placeholder="Balance" 
             value={String(balance)} 
             onChangeText={text => setBalance(Number(text))} 
             keyboardType="numeric" 
+            className='w-[80%] bg-gray-100 rounded-lg '
           />
+          </View>
           <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
         </View>
 
