@@ -90,7 +90,7 @@ const MoneyPage = () => {
       </View>
 
       <TextInput
-        style={styles.input}
+        className="p-2 bg-gray-200 rounded-md border mb-3 "
         placeholder="Amount"
         keyboardType="numeric"
         value={amount}
@@ -100,9 +100,9 @@ const MoneyPage = () => {
       {type === 'income' && (
        <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
           <Text
-            style={styles.input} // Ensure this style is appropriate for displaying text
+            className="p-2 bg-gray-200 rounded-md border mb-3 "
           >
-            {customerId ? customers.find(c => c.id === customerId)?.name : 'Select Customer'} 
+            {customerId ? customers.find(c => c.id === customerId)?.name : 'Select Customer ▼'} 
           </Text>
         </TouchableWithoutFeedback>
       )}
@@ -110,15 +110,15 @@ const MoneyPage = () => {
       {type === 'payment' && (
         <TouchableWithoutFeedback onPress={() => setTraderModalVisible(true)}>
           <Text
-            style={styles.input}
+            className="p-2 bg-gray-200 rounded-md border mb-3 "
           >
-            {traderId ? traders.find(t => t.id === traderId)?.name : 'Select Trader'}
+            {traderId ? traders.find(t => t.id === traderId)?.name : 'Select Trader ▼'}
           </Text>
         </TouchableWithoutFeedback>
       )}
 
       <TextInput
-        style={styles.input}
+         className="p-2 bg-gray-200 rounded-md border mb-3 "
         placeholder="Note"
         value={note}
         onChangeText={setNote}
@@ -229,6 +229,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
+    
+ 
   },
 });
 

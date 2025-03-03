@@ -32,6 +32,12 @@ const Items: React.FC = () => {
   }, [searchTerm, records]);
 
   const handleCreateOrUpdate = async () => {
+    // Check if all fields are filled
+    if (!name || b_price <= 0 || s_price <= 0 || quantity <= 0) {
+      Alert.alert("الرجاء ملئ جميع الحقول.");
+      return;
+    }
+
     if (editingId) {
       await updateRecord(editingId, name, b_price, s_price, quantity);
     } else {

@@ -247,10 +247,11 @@ const BillInPage = () => {
                     </TouchableOpacity>
                     <View className='h-0.5 bg-gray-300 w-full mb-3'></View>
                     <View className='felx-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 gap-1'>
-                        <Text className='font-bold w-[32%] text-center'>المادة</Text>
-                        <Text className='font-bold w-20 text-center'>الكمية</Text>
-                        <Text className='font-bold w-20 text-center'>المبيع</Text>
-                        <Text className='font-bold w-20 text-center'>المجموع</Text>
+                        <Text className='font-bold w-[25%] text-center'>المادة</Text>
+                        <Text className='font-bold w-[20%] text-center'>الكمية</Text>
+                        <Text className='font-bold w-[25%] text-center'>المبيع</Text>
+                        <Text className='font-bold w-[25%] text-center'>المجموع</Text>
+                        
                         </View>                
                     {selectedItems.map((item, index) => {
                         const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
@@ -259,7 +260,7 @@ const BillInPage = () => {
                         return (
                             <View className='bg-gray-100' key={`item-container-${index}`}>
                                 <View key={`item-row-${index}`} className='flex-row items-center gap-2 mb-4'>
-                                    <View className='flex-1 w-[25%]'>
+                                    <View className='flex-1 '>
                                         <TouchableOpacity
                                             className='bg-gray-200 p-2 rounded-md'
                                             onPress={() => {
@@ -272,7 +273,7 @@ const BillInPage = () => {
                                     </View>
 
                                     <TextInput
-                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-16 text-center"
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-[15%] text-center"
                                         keyboardType="numeric"
                                         value={item.quantity.toString()}
                                         onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
@@ -280,14 +281,14 @@ const BillInPage = () => {
                                     />
 
                                     <TextInput
-                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        className="bg-gray-200 p-2 rounded-md flex-1 w-[20%] text-center"
                                         keyboardType="numeric"
                                         value={itemPrice.toString()}
                                         onChangeText={(value) => updateItem(index, 'price', Number(value))}
                                         placeholder="Price"
                                     />
 
-                                    <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center">
+                                    <Text className="bg-gray-200 p-2 rounded-md flex-1 max-w-[20%] text-center">
                                         {itemTotal.toFixed(2)}
                                     </Text>
 
@@ -302,22 +303,22 @@ const BillInPage = () => {
                         );
                     })}
                     <View className='flex-1 flex-row w-full justify-center items-center mt-2 pl-1'>
-                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
+                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[70%] text-center'>
                                 {selectedItems.reduce((total, item) => {
                                     const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
                                     return total + (price * item.quantity);
                                 }, 0)}
                             </Text>
-                            <Text className='font-bold w-28 text-center mb-3'>مجموع الفاتورة:</Text>
+                            <Text className='font-bold w-[30%] text-center mb-3'>مجموع الفاتورة:</Text>
                         </View>
                     <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
-                   <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>{selectedCustomer ? selectedCustomer.balance :""}</Text>
-                        <Text className='font-bold w-20 text-center mb-3'>رصيد سابق:</Text>
+                   <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[70%] text-center'>{selectedCustomer ? selectedCustomer.balance :""}</Text>
+                        <Text className='font-bold w-[30%] text-center mb-3'>رصيد سابق:</Text>
                     </View>
                     <View className='flex-1 flex-row w-full justify-center items-center mt-1'>
                     <View className='flex-1 flex-row w-[45%] items-center'>
                         <TextInput
-                        className="bg-orange-200 p-2 rounded-md mb-4 w-[50%] text-center"
+                        className="bg-green-200 p-2 rounded-md mb-4 w-[50%] text-center"
                         placeholder="Discount"
                         keyboardType="numeric"
                         value={discount.toString()}
@@ -332,7 +333,7 @@ const BillInPage = () => {
                     </View>
                     <View className='flex-1 flex-row w-[45%] items-center justify-center'>
                     <TextInput
-                        className="bg-orange-200 p-2 rounded-md mb-4 w-[70%] text-center"
+                        className="bg-green-200 p-2 rounded-md mb-4 w-[70%] text-center"
                         placeholder="Payment"
                         keyboardType="numeric"
                         value={payment.toString()}
@@ -345,13 +346,7 @@ const BillInPage = () => {
                     <View className='h-0.5 bg-gray-500 w-full mb-3'></View>
                     <View className='flex-1 flex-row w-full items-center'>
                         <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>
-                            {selectedItems.reduce((total, item) => {
-                                const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
-                                return total + (price * item.quantity);
-                            }, 0) - discount}
-                        </Text>
-                        <Text className='font-bold w-28 text-center mb-3'>
-                            الرصيد الحالي: {
+                          {
                                 (selectedCustomer?.balance || 0) + 
                                 selectedItems.reduce((total, item) => {
                                     const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
@@ -360,6 +355,9 @@ const BillInPage = () => {
                                 payment - 
                                 discount
                             }
+                        </Text>
+                        <Text className='font-bold w-28 text-center mb-3'>
+                            الرصيد الحالي: 
                         </Text>                    </View>
                     <TouchableOpacity
                         className='w-full bg-blue-500 p-2 rounded-md'

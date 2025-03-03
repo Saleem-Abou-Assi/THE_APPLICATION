@@ -112,31 +112,33 @@ useEffect(() => {
           <View className=''>
             <TextInput
               className="bg-gray-200 p-2 rounded-md mb-4"
-              placeholder="Search items..."
+              placeholder="ابحث عن اسم..."
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
           </View>
-          <View className='flex-1 flex-row max-h-8 items-end justify-center'>
-            <View className='w-[25%] items-start pl-3'><Text className='font-bold text-lg'> الاسم</Text></View>
-            <View className='w-[25%] items-start'><Text className='font-bold text-lg'> الخط</Text></View>
-            <View className='w-[35%] pl-5'><Text className='font-bold text-lg'> Action</Text></View>
+          <View className='flex-1 flex-row max-h-8  justify-center'>
+            <View className='w-[21%] items-center '><Text className='font-bold text-lg'> الاسم</Text></View>
+            <View className='w-[21%] items-center'><Text className='font-bold text-lg'> الخط</Text></View>
+            <View className='w-[21%] items-center'><Text className='font-bold text-lg'> الرصيد</Text></View>
+            <View className='w-[30%]  items-center ml-3'><Text className='font-bold text-lg'> Action</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
  <ScrollView>
           {filteredItems.map((record) => (
            
-            <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-2 '>
+            <View key={record.id} className='flex-1 flex-row gap-x-1 items-center justify-center max-h-10 my-2 '>
               <View className='w-[20%] items-center'><Text>{record.name}</Text></View>
               <View className='w-[20%] items-center'><Text>{record.line}</Text></View>
+              <View className='w-[20%] items-center'><Text>{record.balance}</Text></View>
               <View>
                 <TouchableOpacity 
                   className='w-11 p-2 bg-[#FCa311] rounded-sm cursor-pointer h-10'
-                  onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
+                  onPress={() => handleEdit(record)}><Text>عدّل</Text></TouchableOpacity>
               </View>
               <View>
                 <TouchableOpacity className='w-15 bg-red-700 p-2 rounded-sm h-10' onPress={() => handleDelete(record.id)}>
-                  <Text className='text-white font-bold w-12'>Delete</Text></TouchableOpacity>
+                  <Text className='text-white font-bold w-12 text-center'>حذف</Text></TouchableOpacity>
               </View>
               <View>
                 <TouchableOpacity 
@@ -148,7 +150,7 @@ useEffect(() => {
                     });
                   }}
                 >
-                  <Text className='text-white font-bold'>Details</Text></TouchableOpacity>
+                  <Text className='text-white font-bold'>تفاصيل</Text></TouchableOpacity>
               </View>
             </View>
           ))}

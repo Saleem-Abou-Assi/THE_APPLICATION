@@ -153,7 +153,7 @@ const BillOutPage = () => {
                         >
                             <Text className='text-white font-bold'>{selectedTrader ? selectedTrader.name : "Select Trader"}</Text>
                         </TouchableOpacity>
-                        <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>الخط: {selectedTrader ? selectedTrader.balance :""} </Text>
+                        
                         </View>
                         {/* Trader Selection Modal */}
                         <Modal
@@ -239,19 +239,19 @@ const BillOutPage = () => {
                                         placeholder="Qty"
                                     />
                                     <TextInput
-                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
-                                        keyboardType="numeric"
-                                        value={item.price.toString()}
-                                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                                        placeholder="Price"
-                                    />
-                                    <TextInput
                                       className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
                                       keyboardType="numeric"
                                       value={item.price > 0 ? item.price.toString() : (items.find(i => i.id === item.itemId)?.s_price.toString() || "")}
                                       onChangeText={(value) => updateItem(index, 'price', Number(value))}
                                       placeholder="Price"
                                   />
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        keyboardType="numeric"
+                                        value={item.price.toString()}
+                                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
+                                        placeholder="Price"
+                                    />
                                     <TouchableOpacity
                                         className='bg-red-500 p-1 rounded-md'
                                         onPress={() => removeItem(index)}

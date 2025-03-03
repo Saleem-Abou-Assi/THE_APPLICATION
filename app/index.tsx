@@ -8,9 +8,7 @@ export default function App() {
   const boxValue = useBox();
 
   return (
-    // <View >
-    //   <Button target='/customer' label='customer' theme='primary'></Button>
-    // </View>
+
     <>
       <View style={styles.container}>  
         <View style={styles.header}>  
@@ -48,7 +46,7 @@ const styles = StyleSheet.create({
     },  
     headerText: {  
         fontWeight: 'bold',  
-        fontSize: 64, // text-8xl equivalent  
+        fontSize: 50, // text-8xl equivalent  
         color: '#color-primary', // replace with actual color  
     },  
     box: {  
