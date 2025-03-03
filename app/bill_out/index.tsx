@@ -7,8 +7,10 @@ import { Item } from '@/src/entity/Items';
 interface BillItem {
     itemId: number;
     quantity: number;
-    price: number;
+    s_price: number;
+    b_price: number;
     name: string;
+    total: number;
 }
 
 interface BillData {
@@ -39,6 +41,9 @@ const BillOutPage = () => {
     const [selectedTrader, setSelectedTrader] = useState<Traders | null>(null);
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
     const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+    const [newItemName, setNewItemName] = useState('');
+    const [newItemBuyPrice, setNewItemBuyPrice] = useState(0);
+    const [newItemSellPrice, setNewItemSellPrice] = useState(0);
 
     // Initialize bill data
     useEffect(() => {
@@ -58,12 +63,25 @@ const BillOutPage = () => {
     }, []);
 
     const addItemToBill = () => {
-        setSelectedItems([...selectedItems, { itemId: 0, quantity: 1, price: 0, name: "" }]);
+        setSelectedItems([...selectedItems, { 
+            itemId: 0, 
+            quantity: 1, 
+            s_price: 0, 
+            b_price: 0, 
+            name: "", 
+            total: 0 
+        }]);
     };
 
     const updateItem = (index: number, field: keyof BillItem, value: number | string) => {
         const newItems = [...selectedItems];
         newItems[index] = { ...newItems[index], [field]: value };
+        
+        // Update total when quantity or s_price changes
+        if (field === 'quantity' || field === 's_price') {
+            newItems[index].total = newItems[index].quantity * newItems[index].s_price;
+        }
+        
         setSelectedItems(newItems);
     };
 
@@ -72,7 +90,7 @@ const BillOutPage = () => {
     };
 
     const calculateTotals = () => {
-        const totalCost = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+        const totalCost = selectedItems.reduce((sum, item) => sum + (item.quantity * item.s_price), 0);
         const selectedTrader = traders.find(t => t.id === selectedTraderId);
         const oldBalance = selectedTrader?.balance || 0;
         const newBalance = oldBalance - totalCost + payment - discount;
@@ -123,11 +141,68 @@ const BillOutPage = () => {
 
     const handleItemSelect = (item: Item) => {
         if (selectedItemIndex !== null) {
-            updateItem(selectedItemIndex, 'itemId', item.id);
-            updateItem(selectedItemIndex, 'price', item.s_price);
-            updateItem(selectedItemIndex, 'name', item.name);
+            const updatedItems = [...selectedItems];
+            updatedItems[selectedItemIndex] = {
+                ...updatedItems[selectedItemIndex],
+                itemId: item.id,
+                name: item.name,
+                s_price: item.s_price,
+                b_price: item.b_price,
+                total: item.s_price * updatedItems[selectedItemIndex].quantity
+            };
+            setSelectedItems(updatedItems);
         }
         setItemModalVisible(false);
+    };
+
+    const handleCreateAndAddItem = async () => {
+        if (!newItemName || !newItemBuyPrice || !newItemSellPrice) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        try {
+            // Create new item object
+            const newItem = {
+                id: Date.now(), // Temporary ID until saved to database
+                name: newItemName,
+                b_price: newItemBuyPrice,
+                s_price: newItemSellPrice,
+                // Add other required fields as needed
+            };
+
+            // Add to items list
+            setItems([...items, newItem]);
+
+            // Add to selected items
+            if (selectedItemIndex !== null) {
+                const updatedItems = [...selectedItems];
+                updatedItems[selectedItemIndex] = {
+                    itemId: newItem.id,
+                    name: newItem.name,
+                    s_price: newItem.s_price,
+                    b_price: newItem.b_price,
+                    quantity: 1,
+                    total: newItem.s_price * 1
+                };
+                setSelectedItems(updatedItems);
+            }
+
+            // Clear new item fields
+            setNewItemName('');
+            setNewItemBuyPrice(0);
+            setNewItemSellPrice(0);
+
+            // Close modal
+            setItemModalVisible(false);
+
+            // TODO: Save new item to database
+            // await yourApiCallToSaveItem(newItem);
+
+        } catch (error) {
+            console.error('Error creating item:', error);
+            alert('Failed to create item');
+        }
     };
 
     if (loading) {
@@ -153,7 +228,6 @@ const BillOutPage = () => {
                         >
                             <Text className='text-white font-bold'>{selectedTrader ? selectedTrader.name : "Select Trader"}</Text>
                         </TouchableOpacity>
-                        <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>الخط: {selectedTrader ? selectedTrader.balance :""} </Text>
                         </View>
                         {/* Trader Selection Modal */}
                         <Modal
@@ -226,9 +300,9 @@ const BillOutPage = () => {
                                                 setItemModalVisible(true);
                                             }}
                                         >
-                                              <Text className='text-center'>
-                                                  {item.itemId ? items.find(i => i.id === item.itemId)?.name : "Select Item"}
-                                              </Text>
+                                            <Text className='text-center'>
+                                                {item.name || "Select Item"}
+                                            </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <TextInput
@@ -241,17 +315,24 @@ const BillOutPage = () => {
                                     <TextInput
                                         className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
                                         keyboardType="numeric"
-                                        value={item.price.toString()}
-                                        onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                                        placeholder="Price"
+                                        value={item.s_price.toString()}
+                                        onChangeText={(value) => updateItem(index, 's_price', Number(value))}
+                                        placeholder="S Price"
                                     />
                                     <TextInput
-                                      className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
-                                      keyboardType="numeric"
-                                      value={item.price > 0 ? item.price.toString() : (items.find(i => i.id === item.itemId)?.s_price.toString() || "")}
-                                      onChangeText={(value) => updateItem(index, 'price', Number(value))}
-                                      placeholder="Price"
-                                  />
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        keyboardType="numeric"
+                                        value={item.b_price.toString()}
+                                        onChangeText={(value) => updateItem(index, 'b_price', Number(value))}
+                                        placeholder="B Price"
+                                    />
+                                    <TextInput
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-20 text-center"
+                                        keyboardType="numeric"
+                                        value={item.total.toString()}
+                                        editable={false}
+                                        placeholder="Total"
+                                    />
                                     <TouchableOpacity
                                         className='bg-red-500 p-1 rounded-md'
                                         onPress={() => removeItem(index)}
@@ -261,9 +342,6 @@ const BillOutPage = () => {
                                 </View>
                             </View>
                         ))}
-
-                        {/* Item Selection Modal */}
-                    
 
                         {/* Display Previous Balance */}
                         <View className='flex-1 flex-row w-full justify-center items-center mt-2 pl-1'>
@@ -312,7 +390,7 @@ const BillOutPage = () => {
                         <View className='h-0.5 bg-gray-500 w-full mb-3'></View>
                         <View className='flex-1 flex-row w-full items-center'>
                             <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
-                                {totalCost - discount}
+                                {  oldBalance + totalCost - payment - discount}
                             </Text>
                             <Text className='font-bold w-28 text-center mb-3'>الرصيد الحالي:</Text>
                         </View>
@@ -341,21 +419,52 @@ const BillOutPage = () => {
                                             value={itemSearch}
                                             onChangeText={handleItemSearch}
                                         />
+                                        
+                                        {/* New Item Creation Fields */}
+                                        <View className='mb-4'>
+                                            <Text className='font-bold mb-2'>Create New Item:</Text>
+                                            <TextInput
+                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                placeholder="Item Name"
+                                                value={newItemName}
+                                                onChangeText={setNewItemName}
+                                            />
+                                            <TextInput
+                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                placeholder="Buying Price"
+                                                keyboardType="numeric"
+                                                value={newItemBuyPrice.toString()}
+                                                onChangeText={(value) => setNewItemBuyPrice(Number(value))}
+                                            />
+                                            <TextInput
+                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                placeholder="Selling Price"
+                                                keyboardType="numeric"
+                                                value={newItemSellPrice.toString()}
+                                                onChangeText={(value) => setNewItemSellPrice(Number(value))}
+                                            />
+                                            <TouchableOpacity
+                                                className='bg-green-500 p-2 rounded-md'
+                                                onPress={handleCreateAndAddItem}
+                                            >
+                                                <Text className='text-white text-center'>Create & Add Item</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        
                                         <ScrollView>
                                             {items.filter(item => item.name.toLowerCase().includes(itemSearch.toLowerCase())).map(item => (
                                                 <TouchableOpacity
                                                     key={item.id}
-                                                     onPress={() => {
-                                            if (selectedItemIndex !== null) {
-                                                updateItem(selectedItemIndex, 'itemId', item.id);
-                                            }
-                                            setItemModalVisible(false);
-                                        }}
+                                                    onPress={() => handleItemSelect(item)}
                                                 >
-                                                    <Text className='p-4'>{item.name}</Text>
+                                                    <View className='p-4'>
+                                                        <Text>{item.name}</Text>
+                                                        <Text className='text-sm text-gray-500'>Buy: {item.b_price} | Sell: {item.s_price}</Text>
+                                                    </View>
                                                 </TouchableOpacity>
                                             ))}
                                         </ScrollView>
+                                        
                                         <TouchableOpacity
                                             onPress={() => setItemModalVisible(false)}
                                             className='mt-4 bg-red-500 p-2 rounded-md'

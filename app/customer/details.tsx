@@ -103,13 +103,17 @@ export default function CustomerDetails() {
               <Text  className='w-[34%] text-center font-bold '>الكمية المباعة</Text>
               <Text  className='w-[34%] text-center font-bold '>سعر المبيع</Text>
             </View>
-            {bill.items.map((item: any) => (
-              <View key={`bill-item-${bill.id}-${item.item_id}`} className='flex-1 flex-row w-full bg-gray-50'>
-                <Text className='w-[34%] text-center p-2 border-r-gray-50'>{item.name}</Text>
-                <Text className='w-[34%] text-center p-2'>{item.sold_quantity}</Text>
-                <Text className='w-[34%] text-center p-2'>{item.sold_price}</Text>
-              </View>
-            ))}
+            {bill.items.map((item: any, index: number) => {
+              const itemKey = `${bill.id}-${item.item_id || index}`;
+              const isVisible = customerData.visibleItems?.includes(itemKey);
+              return (
+                <View key={`bill-item-${itemKey}`} className='flex-1 flex-row w-full bg-gray-50'>
+                  <Text className='w-[34%] text-center p-2 border-r-gray-50'>{item.name}</Text>
+                  <Text className='w-[34%] text-center p-2'>{item.sold_quantity}</Text>
+                  <Text className='w-[34%] text-center p-2'>{item.sold_price}</Text>
+                </View>
+              );
+            })}
           </View>
         ))} 
       </View>
@@ -121,6 +125,10 @@ export default function CustomerDetails() {
             <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
               <Text className='font-bold w-[50%] text-center p-1'>دفع:</Text>
               <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.amount}</Text>
+            </View>
+            <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
+              <Text className='font-bold w-[50%] text-center p-1'>ملاحظات:</Text>
+              <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.note}</Text>
             </View>
             <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
               <Text className='font-bold w-[50%] text-center p-1'>بتاريخ:</Text>

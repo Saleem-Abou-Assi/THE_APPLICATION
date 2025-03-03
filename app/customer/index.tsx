@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/cutomers';
 import { Customer } from '../../src/entity/Customers';
 import { useRouter } from 'expo-router';
@@ -48,18 +48,37 @@ useEffect(() => {
   };
 
   const handleEdit = (record: Customer) => {
-    setName(record.name);
-    setLine(record.line);
-    setBalance(record.balance);
-    setEditingId(record.id);
-    
+    Alert.alert(
+      "Confirm Edit",
+      "Are you sure you want to edit this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => {
+            setName(record.name);
+            setLine(record.line);
+            setBalance(record.balance);
+            setEditingId(record.id);
+          }
+        }
+      ]
+    );
   };
 
   const handleDelete = (id: number) => {
-    deleteRecord(id);
-    getRecords((data) => {
-      setRecords(data);
-    });
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => {
+            deleteRecord(id);
+            getRecords((data) => {
+              setRecords(data);
+            });
+          }
+        }
+      ]
+    );
   };
 
   return (

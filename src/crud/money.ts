@@ -21,17 +21,17 @@ export const initMoney = async()=>{
     }
 }
 
-export const createIncome = async(amount:number, customer_id:number|null, note:string) => {
+export const createIncome = async(amount: number, customer_id: number|null, note: string, bill_in_id: number|null = null) => {
     // Create the income record
     const result = await db.runAsync(
-        'INSERT INTO income (amount, customer_id, note) VALUES (?, ?, ?)', 
-        amount, customer_id, note
+        'INSERT INTO income (amount, customer_id, note, bill_in_id) VALUES (?, ?, ?, ?)', 
+        [amount, customer_id, note, bill_in_id]
     );
 
     // Update customer balance if customer_id exists
     if (customer_id) {
         await db.runAsync(
-            'UPDATE customers SET balance = balance + ? WHERE id = ?',
+            'UPDATE customers SET balance = balance - ? WHERE id = ?',
             amount, customer_id
         );
     }
@@ -45,11 +45,11 @@ export const getIncome = async (callback: (incomes: any[]) => void) => {
 };
 
 // Payment CRUD operations
-export const createPayment = async(amount:number, trader_id:number|null, note:string) => {
+export const createPayment = async(amount: number, trader_id: number|null, note: string, bill_out_id: number|null = null) => {
     // Create the payment record
     const result = await db.runAsync(
-        'INSERT INTO payment (amount, trader_id, note) VALUES (?, ?, ?)', 
-        amount, trader_id, note
+        'INSERT INTO payment (amount, trader_id, note, bill_out_id) VALUES (?, ?, ?, ?)', 
+        [amount, trader_id, note, bill_out_id]
     );
 
     // Update trader balance if trader_id exists

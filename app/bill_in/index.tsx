@@ -110,7 +110,7 @@ const BillInPage = () => {
         
         const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
         const oldBalance = selectedCustomer?.balance || 0;
-        const newBalance = oldBalance + totalCost - payment;
+        const newBalance = oldBalance + totalCost - payment - discount;
         
         return { totalCost, oldBalance, newBalance };
     };
@@ -192,7 +192,7 @@ const BillInPage = () => {
                         onPress={() => setModalVisible(true)}
                     >
                         <Text className='text-white font-bold'>{selectedCustomer ? selectedCustomer.name : "العميل"}</Text>
-                        <Text style={{ marginLeft: 5,color:'white' }}>▼</Text>
+                        <Text style={{ marginLeft: 5, color: 'white' }}></Text>
                     </TouchableOpacity>
                     <View>
                     <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>الخط: {selectedCustomer ? selectedCustomer.line :""} </Text>
@@ -301,6 +301,15 @@ const BillInPage = () => {
                             </View>
                         );
                     })}
+                    <View className='flex-1 flex-row w-full justify-center items-center mt-2 pl-1'>
+                            <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[75%] text-center'>
+                                {selectedItems.reduce((total, item) => {
+                                    const price = item.itemId ? items.find(i => i.id === item.itemId)?.s_price || 0 : 0;
+                                    return total + (price * item.quantity);
+                                }, 0)}
+                            </Text>
+                            <Text className='font-bold w-28 text-center mb-3'>مجموع الفاتورة:</Text>
+                        </View>
                     <View className='flex-1 flex-row w-full justify-center items-center mt-2'>
                    <Text className='bg-gray-200 p-2 rounded-md mb-4 w-[80%] text-center'>{selectedCustomer ? selectedCustomer.balance :""}</Text>
                         <Text className='font-bold w-20 text-center mb-3'>رصيد سابق:</Text>
