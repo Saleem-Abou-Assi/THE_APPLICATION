@@ -145,7 +145,7 @@ const BillInPage = () => {
             };
         });
 
-        const billData: BillData = {
+        const billData = {
             bill_in_id: Date.now(),
             customer_id: selectedCustomerId,
             items_array: itemsWithPrices,

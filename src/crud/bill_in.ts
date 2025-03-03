@@ -67,8 +67,8 @@ export const createBill = async (billData: {
 
         // Update customer balance
         await db.runAsync(
-            'UPDATE customers SET balance = balance - ? + ? WHERE id = ?',
-            [billData.total_cost, billData.pay, billData.customer_id]
+            'UPDATE customers SET balance = ? WHERE id = ?',
+            [billData.new_balance, billData.customer_id]
         );
         
         return { success: true };
