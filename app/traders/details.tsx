@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { getTraderDetails } from '../../src/crud/traders';
 
@@ -9,6 +9,14 @@ export default function TraderDetails() {
   const [traderData, setTraderData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedBills, setExpandedBills] = useState<Record<number, boolean>>({});
+
+  const toggleBill = (billId: number) => {
+    setExpandedBills(prev => ({
+      ...prev,
+      [billId]: !prev[billId]
+    }));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,63 +53,86 @@ export default function TraderDetails() {
         <View className='bg-white w-[70%] flex-1 flex-col items-start rounded-xl p-2 m-2'>
           <Text className='font-bold w-full text-center p-1'>اسم التاجر: {traderData.trader.name}</Text>
           <Text className='font-bold w-full text-center p-1'>الرصيد: {traderData.trader.balance}</Text>
+          <Text className='font-bold w-full text-center p-1'>عدد الفواتير: {traderData.bills.length}</Text>
+          <Text className='font-bold w-full text-center p-1'>عدد الدفعات: {traderData.payments.length}</Text>
         </View>
       </View>
 
       <View className='bg-white w-full'>
         <View className='flex-1 flex-col bg-gray-200 p-2 m-2 rounded-lg'>
-          <Text className='text-2xl font-bold m-1 text-[black] text-center'>الفواتير</Text>
+          <Text className='text-2xl font-bold m-1 text-[black] text-center'>
+            الفواتير
+          </Text>
           {traderData.bills.map((bill: any) => (
-            <View key={bill.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
+            <TouchableOpacity 
+              key={bill.id} 
+              onPress={() => toggleBill(bill.id)}
+              className='flex-1 flex-col bg-white rounded-xl p-2 m-2'
+            >
+              <View className='flex-row-reverse items-center p-2 bg-gray-100'>
+                <Text className='w-[50%] text-center font-bold'>التاريخ: </Text>
+                <Text className='font-bold w-[50%] text-center'>{bill.created_at}</Text>
+              </View>
               <View className='flex-row-reverse items-center p-2 bg-gray-100'>
                 <Text className='w-[50%] text-center font-bold'>إجمالي التكلفة: </Text>
                 <Text className='font-bold w-[50%] text-center'>{bill.total_cost}</Text>
               </View>
-              
-              <View className='flex-row-reverse items-center p-2 bg-gray-100'>
-                <Text className='w-[50%] text-center font-bold '>المدفوع: </Text>
-                <Text className='font-bold w-[50%] text-center'>{bill.pay}</Text>
-              </View>
 
-              <View className='flex-row-reverse items-center p-2 bg-gray-100'>
-                <Text className='w-[50%] text-center font-bold'>الرصيد القديم: </Text>
-                <Text className='font-bold w-[50%] text-center'>{bill.old_balance}</Text>
-              </View>
+              {expandedBills[bill.id] && (
+                <View>
+                  <View className='flex-row-reverse items-center p-2 bg-gray-100'>
+                    <Text className='w-[50%] text-center font-bold '>المدفوع: </Text>
+                    <Text className='font-bold w-[50%] text-center'>{bill.pay}</Text>
+                  </View>
 
-              <View className='flex-row-reverse items-center p-2 bg-gray-100'>
-                <Text className='w-[50%] text-center font-bold'>الرصيد الجديد: </Text>
-                <Text className='font-bold w-[50%] text-center'>{bill.new_balance}</Text>
-              </View>
+                  <View className='flex-row-reverse items-center p-2 bg-gray-100'>
+                    <Text className='w-[50%] text-center font-bold'>الرصيد القديم: </Text>
+                    <Text className='font-bold w-[50%] text-center'>{bill.old_balance}</Text>
+                  </View>
 
-              <Text className='font-bold text-center p-3'>المحتويات:</Text>
-              <View className='flex-row w-full bg-gray-100'>
-                <Text className='w-[34%] text-center p-2 font-bold'>اسم المادة</Text>
-                <Text className='w-[34%] text-center p-2 font-bold'>الكمية</Text>
-                <Text className='w-[34%] text-center p-2 font-bold'>السعر</Text>
-              </View>
-              {bill.items.map((item: any) => (
-                <View key={item.item_id} className='flex-1 flex-row w-full bg-gray-50'>
-                  <Text className='w-[34%] text-center p-2 '>{item.name}</Text>
-                  <Text className='w-[34%] text-center p-2 '>{item.quantity} </Text>
-                  <Text className='w-[34%] text-center p-2 '>{item.price}</Text>
+                  <View className='flex-row-reverse items-center p-2 bg-gray-100'>
+                    <Text className='w-[50%] text-center font-bold'>الرصيد الجديد: </Text>
+                    <Text className='font-bold w-[50%] text-center'>{bill.new_balance}</Text>
+                  </View>
+
+                  <Text className='font-bold text-center p-3'>المحتويات:</Text>
+                  <View className='flex-row w-full bg-gray-100'>
+                    <Text className='w-[34%] text-center p-2 font-bold'>اسم المادة</Text>
+                    <Text className='w-[34%] text-center p-2 font-bold'>الكمية</Text>
+                    <Text className='w-[34%] text-center p-2 font-bold'>السعر</Text>
+                  </View>
+                  {bill.items.map((item: any) => (
+                    <View key={item.item_id} className='flex-1 flex-row w-full bg-gray-50'>
+                      <Text className='w-[34%] text-center p-2 '>{item.name}</Text>
+                      <Text className='w-[34%] text-center p-2 '>{item.quantity} </Text>
+                      <Text className='w-[34%] text-center p-2 '>{item.price}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
+              )}
+            </TouchableOpacity>
           ))}
         </View>
 
         <View className='flex-1 flex-col bg-gray-200 p-2 m-2 rounded-lg'>
-          <Text className='text-2xl font-bold m-1 text-black text-center'>المدفوعات</Text>
+          <Text className='text-2xl font-bold m-1 text-black text-center'>
+            المدفوعات 
+          </Text>
           {traderData.payments.map((payment: any) => (
             <View key={payment.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-1'>
               <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
-                <Text className='font-bold w-[50%] text-center p-1'>المبلغ: </Text>
+                <Text className='font-bold w-[50%] text-center p-1'>الدفع: </Text>
                 <Text className='font-bold w-[50%] text-center p-1'>{payment.amount}</Text>
+              </View>
+              <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
+                <Text className='font-bold w-[50%] text-center p-1'>ملاحظات: </Text>
+              <Text className='font-bold w-[50%] text-center p-1'>{payment.note}</Text>
               </View>
               <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
                 <Text className='font-bold w-[50%] text-center p-1'>بتاريخ: </Text>
               <Text className='font-bold w-[50%] text-center p-1'>{payment.created_at}</Text>
               </View>
+              
             </View>
           ))}
         </View>

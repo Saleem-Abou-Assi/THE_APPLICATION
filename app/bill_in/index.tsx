@@ -192,7 +192,7 @@ const BillInPage = () => {
                         onPress={() => setModalVisible(true)}
                     >
                         <Text className='text-white font-bold'>{selectedCustomer ? selectedCustomer.name : "العميل"}</Text>
-                        <Text style={{ marginLeft: 5,color:'white' }}>▼</Text>
+                        <Text style={{ marginLeft: 5, color: 'white' }}></Text>
                     </TouchableOpacity>
                     <View>
                     <Text className='bg-gray-200 p-2 rounded-md mb-4 w-36 text-center'>الخط: {selectedCustomer ? selectedCustomer.line :""} </Text>

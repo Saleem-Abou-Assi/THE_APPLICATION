@@ -36,6 +36,9 @@ export const createBillOut = async (billData: {
     const db = SQLite.openDatabaseSync('DataBase.sqlite');
 
     try {
+        // Start transaction
+        await db.execAsync('BEGIN TRANSACTION');
+
         // Insert bill header
         const bill = await db.runAsync(
             'INSERT INTO bills_out (trader_id, total_cost, pay, old_balance, new_balance) VALUES (?, ?, ?, ?, ?)',
@@ -44,9 +47,23 @@ export const createBillOut = async (billData: {
 
         // Insert bill items
         for (const item of billData.items_array) {
+            // First check if item exists
+            const existingItem = await db.getFirstAsync('SELECT id FROM items WHERE id = ?', [item.itemId]);
+            
+            if (!existingItem) {
+                // If item doesn't exist, create it first
+                await db.runAsync(
+                    'INSERT INTO items (name, b_price, s_price, quantity) VALUES (?, ?, ?, ?)',
+                    [item.name, item.b_price, item.s_price, 0]
+                );
+                // Get the newly created item's ID
+                const newItem = await db.getFirstAsync('SELECT id FROM items WHERE name = ?', [item.name]);
+                item.itemId = newItem.id;
+            }
+
             await db.runAsync(
                 'INSERT INTO item_bill_out (item_id, bill_out_id, price, quantity, note) VALUES (?, ?, ?, ?, ?)',
-                [item.itemId, bill.lastInsertRowId, item.price, item.quantity, item.note]
+                [item.itemId, bill.lastInsertRowId, item.s_price, item.quantity, '']
             );
 
             // Update item quantity
@@ -59,11 +76,22 @@ export const createBillOut = async (billData: {
         // Insert payments
         await db.runAsync(
             'INSERT INTO payment (amount, trader_id, bill_out_id, note) VALUES (?, ?, ?, ?)',
-            [billData.pay, billData.trader_id, billData.bill_out_id, " "]
+            [billData.pay, billData.trader_id, bill.lastInsertRowId, " "]
         );
+
+        // Update trader balance (corrected to ADD to balance)
+        await db.runAsync(
+            'UPDATE traders SET balance = balance + ? - ? WHERE id = ?',
+            [billData.total_cost, billData.pay, billData.trader_id]
+        );
+
+        // Commit transaction
+        await db.execAsync('COMMIT');
         
         return { success: true };
     } catch (error) {
+        // Rollback on error
+        await db.execAsync('ROLLBACK');
         console.error('Error creating bill out:', error);
         throw error;
     }

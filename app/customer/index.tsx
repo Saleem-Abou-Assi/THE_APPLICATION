@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView,  ScrollView, Alert } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/cutomers';
 import { Customer } from '../../src/entity/Customers';
 import { useRouter } from 'expo-router';
@@ -138,7 +138,7 @@ useEffect(() => {
               </View>
               <View>
                 <TouchableOpacity className='w-15 bg-red-700 p-2 rounded-sm h-10' onPress={() => handleDelete(record.id)}>
-                  <Text className='text-white font-bold w-12 text-center'>حذف</Text></TouchableOpacity>
+                  <Text className='text-white font-bold w-10 text-center'>حذف</Text></TouchableOpacity>
               </View>
               <View>
                 <TouchableOpacity 
