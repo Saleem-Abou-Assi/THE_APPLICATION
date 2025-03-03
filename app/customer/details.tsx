@@ -75,7 +75,7 @@ export default function CustomerDetails() {
       <View className='flex-1 flex-col bg-gray-200 p-2 m-2 rounded-lg'>
         <Text className='text-2xl font-bold m-1 text-[black] text-center'>الفواتير</Text>
         {customerData.bills.map((bill: any) => (
-          <View key={bill.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
+          <View key={`bill-${bill.id}`} className='flex-1 flex-col bg-white rounded-xl p-2 m-2'>
             <View className='flex-1 flex-row-reverse w-full '>
               <Text className='font-bold w-[50%] text-center p-2'>تاريخ الاصدار:</Text>
               <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.created_at}</Text>
@@ -104,7 +104,7 @@ export default function CustomerDetails() {
               <Text  className='w-[34%] text-center font-bold '>سعر المبيع</Text>
             </View>
             {bill.items.map((item: any) => (
-              <View key={item.item_id} className='flex-1 flex-row w-full bg-gray-50'>
+              <View key={`bill-item-${bill.id}-${item.item_id}`} className='flex-1 flex-row w-full bg-gray-50'>
                 <Text className='w-[34%] text-center p-2 border-r-gray-50'>{item.name}</Text>
                 <Text className='w-[34%] text-center p-2'>{item.sold_quantity}</Text>
                 <Text className='w-[34%] text-center p-2'>{item.sold_price}</Text>
@@ -117,7 +117,7 @@ export default function CustomerDetails() {
       <View>
         <Text className='text-2xl font-bold m-1 text-black text-center'>المدفوعات</Text>
         {customerData.payments.map((payment: any) => (
-          <View key={payment.id} className='flex-1 flex-col bg-white rounded-xl p-2 m-1'>
+          <View key={`payment-${payment.id}`} className='flex-1 flex-col bg-white rounded-xl p-2 m-1'>
             <View className='flex-1 flex-row-reverse w-full bg-gray-50 p-1'>
               <Text className='font-bold w-[50%] text-center p-1'>دفع:</Text>
               <Text className='bg-gray-100 font-bold w-[50%] text-center p-1'>{payment.amount}</Text>
