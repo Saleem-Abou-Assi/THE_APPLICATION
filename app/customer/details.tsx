@@ -105,7 +105,7 @@ export default function CustomerDetails() {
             </View>
             {bill.items.map((item: any) => (
               <View key={item.item_id} className='flex-1 flex-row w-full bg-gray-50'>
-                <Text className='w-[34%] text-center p-2 border-r-gray-50'>{item.name}</Text>
+                <Text className='w-[34%] text-center p-2 '>{item.name}</Text>
                 <Text className='w-[34%] text-center p-2'>{item.sold_quantity}</Text>
                 <Text className='w-[34%] text-center p-2'>{item.sold_price}</Text>
               </View>

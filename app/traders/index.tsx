@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/traders'; // Updated import
 import { Traders } from '../../src/entity/Traders'; // Assuming you have a Traders entity similar to Item
 import { useRouter } from 'expo-router';
@@ -36,17 +36,37 @@ const TradersComponent: React.FC = () => { // Updated component name
     });
   };
 
-  const handleEdit = (record: Traders) => { // Updated type
-    setName(record.name);
-    setBalance(record.balance); // Updated state
-    setEditingId(record.id);
+  const handleEdit = (record: Traders) => {
+    Alert.alert(
+      "Confirm Edit",
+      "Are you sure you want to edit this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => {
+            setName(record.name);
+            setBalance(record.balance);
+            setEditingId(record.id);
+          }
+        }
+      ]
+    );
   };
 
-  const handleDelete = async (id: number) => {
-    await deleteRecord(id);
-    getRecords((data) => {
-      setRecords(data);
-    });
+  const handleDelete = (id: number) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: async () => {
+            await deleteRecord(id);
+            getRecords((data) => {
+              setRecords(data);
+            });
+          }
+        }
+      ]
+    );
   };
 
   const filteredItems = records.filter((record) =>

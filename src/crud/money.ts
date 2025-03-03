@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 // Open or create a SQLite database
 const db = SQLite.openDatabaseSync('DataBase.sqlite');
@@ -62,27 +62,42 @@ interface Payment  {
     note:string;
 }
 
-export const BOX = async(useCallback:(box:number)=>void)=>{
-    const [income,setIncome] = useState<Income[]>([]);
-    const [payment,setPayment] = useState<Payment[]>([]);
+export const subscribeToBox = (callback: (box: number) => void, interval = 5000) => {
+    // Initial calculation
+    calculateBox(callback);
+    
+    // Set up interval for real-time updates
+    const intervalId = setInterval(() => {
+        calculateBox(callback);
+    }, interval);
 
-    const fetchData = () => {
-        getIncome((data) => {
-            setIncome(data);
-            calculateBox(data, payment);
-        });
+    // Return cleanup function
+    return () => clearInterval(intervalId);
+};
 
-        getPayments((data)=>{
-            setPayment(data);
-            calculateBox(income, data);
-        })
-    };
-
-    const calculateBox = (incomes: Income[], payments: Payment[]) => {
-        const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
+const calculateBox = async (callback: (box: number) => void) => {
+    try {
+        const income = await db.getAllAsync('SELECT * FROM income') as Income[];
+        const payments = await db.getAllAsync('SELECT * FROM payment') as Payment[];
+        
+        const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
         const totalPayments = payments.reduce((sum, item) => sum + item.amount, 0);
         const box = totalIncome - totalPayments;
-        useCallback(box);
-    };
+        
+        callback(box);
+    } catch (error) {
+        console.error('Error calculating box:', error);
+    }
+};
 
-}
+// Usage in component:
+export const useBox = () => {
+    const [box, setBox] = useState(0);
+
+    useEffect(() => {
+        const unsubscribe = subscribeToBox(setBox);
+        return () => unsubscribe();
+    }, []);
+
+    return box;
+};

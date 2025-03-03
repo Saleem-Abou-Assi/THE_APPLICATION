@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, Text, Button, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, Alert } from 'react-native';
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../src/crud/items';
 import { Item } from '../../src/entity/Items'; // Assuming you have an Item entity similar to Customer
 
@@ -48,18 +48,38 @@ const Items: React.FC = () => {
   };
 
   const handleEdit = (record: Item) => {
-    setName(record.name);
-    setBPrice(record.b_price);
-    setSPrice(record.s_price);
-    setQuantity(record.quantity);
-    setEditingId(record.id);
+    Alert.alert(
+      "Confirm Edit",
+      "Are you sure you want to edit this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => {
+            setName(record.name);
+            setBPrice(record.b_price);
+            setSPrice(record.s_price);
+            setQuantity(record.quantity);
+            setEditingId(record.id);
+          }
+        }
+      ]
+    );
   };
 
-  const handleDelete = async (id: number) => {
-    await deleteRecord(id);
-    getRecords((data) => {
-      setRecords(data);
-    });
+  const handleDelete = (id: number) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this record?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: async () => {
+            await deleteRecord(id);
+            getRecords((data) => {
+              setRecords(data);
+            });
+          }
+        }
+      ]
+    );
   };
 
   return (
