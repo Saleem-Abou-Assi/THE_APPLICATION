@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { getCustomerDetails } from '../../src/crud/cutomers';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import * as Print from 'expo-print';
 
 export default function CustomerDetails() {
   const { customerId } = useLocalSearchParams();
@@ -17,6 +18,64 @@ export default function CustomerDetails() {
       ...prev,
       [billId]: !prev[billId]
     }));
+  };
+
+  const printBill = async (bill: any) => {
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            .bill-container { max-width: 800px; margin: 0 auto; }
+            .bill-header { text-align: center; margin-bottom: 20px; }
+            .bill-details { margin-bottom: 20px; }
+            .bill-table { width: 100%; border-collapse: collapse; }
+            .bill-table th, .bill-table td { border: 1px solid #000; padding: 8px; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="bill-container">
+            <div class="bill-header">
+              <h1>فاتورة #${bill.id}</h1>
+              <p>تاريخ الإصدار: ${bill.created_at}</p>
+            </div>
+            <div class="bill-details">
+              <p>قيمة الفاتورة: ${bill.total_cost}</p>
+              <p>المدفوعات: ${bill.pay}</p>
+              <p>الرصيد السابق: ${bill.old_balance}</p>
+              <p>الرصيد الحالي: ${bill.new_balance}</p>
+            </div>
+            <table class="bill-table">
+              <thead>
+                <tr>
+                  <th>اسم المادة</th>
+                  <th>الكمية المباعة</th>
+                  <th>سعر المبيع</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bill.items.map((item: any) => `
+                  <tr>
+                    <td>${item.name}</td>
+                    <td>${item.sold_quantity}</td>
+                    <td>${item.sold_price}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </body>
+      </html>
+    `;
+
+    try {
+      await Print.printAsync({
+        html,
+        orientation: 'portrait',
+      });
+    } catch (error) {
+      console.error('Failed to print:', error);
+    }
   };
 
   useEffect(() => {
@@ -127,6 +186,12 @@ export default function CustomerDetails() {
                   })}
                 </View>
               )}
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => printBill(bill)}
+              className='bg-blue-500 p-2 rounded mt-2'
+            >
+              <Text className='text-white text-center'>طباعة الفاتورة</Text>
             </TouchableOpacity>
           </View>
         ))} 
