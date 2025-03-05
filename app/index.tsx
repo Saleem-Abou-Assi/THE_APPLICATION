@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import "../global.css";
 import { useBox } from '../src/crud/money';
 
@@ -23,9 +23,25 @@ export default function App() {
         <Button target='/customer' label='customer' theme='primary'></Button>
         <Button target='/item' label='items' theme='primary'></Button>
         <Button target='/traders' label='traders' theme='primary'></Button>
-        <Button target='/bill_in' label='مبيع' theme='primary'></Button>
+        {/* <Button target='/bill_in' label='مبيع' theme='primary'></Button> */}
         <Button target='/bill_out' label='شراء' theme='primary'></Button>
         <Button target='/money' label='مقبوضات\مدفوعات' theme='primary'></Button>
+        <TouchableOpacity 
+           
+          // label='تصدير البيانات' 
+          // theme='primary'
+          className='w-32 h-32 bg-black '
+          onPress={async () => {
+            try {
+              const { exportDataToExcel } = await import('@/src/excel');
+              await exportDataToExcel();
+              alert('تم تصدير البيانات بنجاح');
+            } catch (error) {
+              console.error('Export failed:', error);
+              alert('فشل تصدير البيانات');
+            }
+          }}
+        ></TouchableOpacity>
       </View> 
     </> 
   );

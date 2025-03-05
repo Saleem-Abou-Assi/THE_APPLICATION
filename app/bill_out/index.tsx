@@ -163,7 +163,7 @@ const BillOutPage = () => {
 
         try {
             // Create new item object
-            const newItem = {
+            const newItem= {
                 id: Date.now(), // Temporary ID until saved to database
                 name: newItemName,
                 b_price: newItemBuyPrice,
