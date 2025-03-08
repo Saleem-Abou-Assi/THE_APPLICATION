@@ -11,7 +11,6 @@ export const runMigrations = async () => {
     await db.execAsync(`  
       PRAGMA journal_mode = WAL;  
 
-      
 
       CREATE TABLE IF NOT EXISTS items (  
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,  

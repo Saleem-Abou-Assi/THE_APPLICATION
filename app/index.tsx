@@ -1,15 +1,30 @@
 import Button from '@/components/Button';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import "../global.css";
 import { useBox } from '../src/crud/money';
+import { restoreDatabaseFromExcel } from '@/src/excel';
 
 export default function App() {
   const boxValue = useBox();
 
-  return (
+  const handleRestoreDatabase = async () => {
+    try {
+      const restored = await restoreDatabaseFromExcel();
+      if (restored) {
+        Alert.alert('Success', 'Database restored successfully');
+        // Optional: Refresh data or navigate
+      } else {
+        Alert.alert('Error', 'Failed to restore database');
+      }
+    } catch (error) {
+      console.error('Restore failed:', error);
+      Alert.alert('Error', 'An error occurred while restoring the database');
+    }
+  };
 
-    <>
+  return (
+    <ScrollView>
       <View style={styles.container}>  
         <View style={styles.header}>  
           <Text style={styles.headerText}>App Name</Text>  
@@ -20,17 +35,19 @@ export default function App() {
         </View>  
       </View>  
       <View style={styles.buttonContainer}>  
-        <Button target='/customer' label='customer' theme='primary'></Button>
-        <Button target='/item' label='items' theme='primary'></Button>
-        <Button target='/traders' label='traders' theme='primary'></Button>
-        {/* <Button target='/bill_in' label='مبيع' theme='primary'></Button> */}
-        <Button target='/bill_out' label='شراء' theme='primary'></Button>
+        <Button target='/customer' label='زبائن' theme='primary'></Button>
+        <Button target='/item' label='مواد' theme='primary'></Button>
+        <Button target='/traders' label='تجار' theme='primary'></Button>
         <Button target='/money' label='مقبوضات\مدفوعات' theme='primary'></Button>
-        <TouchableOpacity 
+         <Button target='/bill_in' label='مبيع' theme='primary'></Button>
+        <Button target='/bill_out' label='شراء' theme='primary'></Button>
+       
+      </View> 
+      <View className='w-full h-16 felx-1 items-center justify-center'>
+         <TouchableOpacity 
            
-          // label='تصدير البيانات' 
-          // theme='primary'
-          className='w-32 h-32 bg-black '
+         
+          className=' w-32 h-12 bg-[#FCa311] justify-center'
           onPress={async () => {
             try {
               const { exportDataToExcel } = await import('@/src/excel');
@@ -41,9 +58,17 @@ export default function App() {
               alert('فشل تصدير البيانات');
             }
           }}
-        ></TouchableOpacity>
-      </View> 
-    </> 
+        ><Text className='font-bold text-center '>تصدير البيانات</Text></TouchableOpacity>
+      </View>
+      <View className='w-full h-16 felx-1 items-center justify-center'>
+        <TouchableOpacity 
+          className='w-32 h-12 bg-green-500 justify-center'
+          onPress={handleRestoreDatabase}
+        >
+          <Text className='font-bold text-center'>Restore Database</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView> 
   );
 }
 

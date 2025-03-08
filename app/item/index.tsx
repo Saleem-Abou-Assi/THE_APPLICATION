@@ -98,7 +98,7 @@ const Items: React.FC = () => {
           <TextInput placeholder="Name" value={name} onChangeText={setName} className='bg-gray-100 w-[80%] rounded-md'/>
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
-          <Text className='font-bold w-20'> سعر الشراء:</Text>
+          <Text className='font-bold w-20 text-center'> سعر الشراء:</Text>
           <TextInput 
             placeholder="Selling Price" 
             value={String(b_price)} 
@@ -108,7 +108,7 @@ const Items: React.FC = () => {
           />
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
-          <Text className='font-bold w-20'>سعر المبيع:</Text>
+          <Text className='font-bold w-20 text-center'>سعر المبيع:</Text>
           <TextInput 
             placeholder="Buying Price" 
             value={String(s_price)} 
@@ -118,7 +118,7 @@ const Items: React.FC = () => {
           />
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
-          <Text className='font-bold w-20'>الكمية:</Text>
+          <Text className='font-bold w-20 text-center'>الكمية:</Text>
           <TextInput 
             placeholder="Quantity" 
             value={String(quantity)} 
@@ -127,7 +127,7 @@ const Items: React.FC = () => {
             className='bg-gray-100 w-[80%] rounded-md'
           />
           </View>
-          <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
+          <Button title={editingId ? "عدّل" : "أنشئ"} onPress={handleCreateOrUpdate} />
         </View>
         
         <View className='w-[100%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
@@ -142,32 +142,32 @@ const Items: React.FC = () => {
 
 
        
-          <View className='flex-1 flex-row max-h-9 justify-center gap-x-3 m-2'>
-            <View className='w-[15%] items-center '><Text className='font-bold text-lg'> المنتج</Text></View>
-            <View className='w-[16%] items-center'><Text className='font-bold text-lg'> الشراء</Text></View>
-            <View className='w-[15%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
-            <View className='w-[15%] items-center'><Text className='font-bold text-lg mx-1'>الكمية</Text></View>
-            <View className='w-[28%] items-center '><Text className='font-bold text-lg '>تفاعل</Text></View>
+          <View className='flex-1 flex-row max-h-9 justify-center  m-2'>
+            <View className='w-[20%] items-center '><Text className='font-bold text-lg'> المنتج</Text></View>
+            <View className='w-[20%] items-center'><Text className='font-bold text-lg'> الشراء</Text></View>
+            <View className='w-[20%] items-center'><Text className='font-bold text-lg'> المبيع</Text></View>
+            <View className='w-[20%] items-center'><Text className='font-bold text-lg mx-1'>الكمية</Text></View>
+            <View className='w-[20%] items-center '><Text className='font-bold text-lg '>تفاعل</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
            <KeyboardAvoidingView keyboardVerticalOffset={-100}
             behavior="padding" className='flex-1 w-full items-center'>
           <ScrollView>
             {filteredItems.map((record) => (
-              <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-10 my-3'>
-                <View className='w-[15%] items-center'><Text>{record.name}</Text></View>
-                <View className='w-[15%] items-center'><Text>{record.b_price}</Text></View>
-                <View className='w-[15%] items-center'><Text>{record.s_price}</Text></View>
-                <View className='w-[15%] items-center'><Text>{record.quantity}</Text></View>
-                <View>
+              <View key={record.id} className='flex-1 flex-row  items-center justify-center max-h-10 my-3'>
+                <View className='w-[20%] items-center'><Text>{record.name}</Text></View>
+                <View className='w-[20%] items-center'><Text>{record.b_price}</Text></View>
+                <View className='w-[20%] items-center'><Text>{record.s_price}</Text></View>
+                <View className='w-[20%] items-center'><Text>{record.quantity}</Text></View>
+                <View className='w-[20%]'>
                   <TouchableOpacity 
                     className='w-11 p-2 mx-1 bg-[#FCa311] rounded-sm cursor-pointer h-10'
                     onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
                 </View>
-                <View>
+                {/* <View>
                   <TouchableOpacity className='w-15 bg-red-700 p-2 rounded-sm h-10' onPress={() => handleDelete(record.id)}>
                     <Text className='text-white font-bold'>Delete</Text></TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             ))}
           </ScrollView>
