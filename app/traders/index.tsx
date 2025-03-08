@@ -38,8 +38,8 @@ const TradersComponent: React.FC = () => { // Updated component name
 
   const handleEdit = (record: Traders) => {
     Alert.alert(
-      "Confirm Edit",
-      "Are you sure you want to edit this record?",
+      "تحذير!",
+      "هل حقاً تريد التعديل على هذا العنصر؟",
       [
         { text: "Cancel", style: "cancel" },
         { text: "OK", onPress: () => {
@@ -91,7 +91,7 @@ const TradersComponent: React.FC = () => { // Updated component name
             className='w-[80%] bg-gray-100 rounded-lg '
           />
           </View>
-          <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
+          <Button title={editingId ? "عدّل" : "أنشئ"} onPress={handleCreateOrUpdate} />
         </View>
 
         <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
@@ -103,28 +103,29 @@ const TradersComponent: React.FC = () => { // Updated component name
               onChangeText={setSearchQuery}
             />
           </View>
-          <View className='flex-1 flex-row max-h-8 items-end justify-center'>
-            <View className='w-[25%] items-start pl-1'><Text className='font-bold text-lg'>Name</Text></View>
-            <View className='w-[25%] items-start'><Text className='font-bold text-lg'>Balance</Text></View>
-            <View className='w-[40%] items-center'><Text className='font-bold text-lg'>Action</Text></View>
+          <View className='flex-1 flex-row max-h-8 items-center justify-center'>
+            <View className='w-[30%] items-center'><Text className='font-bold text-lg'>الاسم</Text></View>
+            <View className='w-[30%] items-center'><Text className='font-bold text-lg'>الرصيد</Text></View>
+            <View className='w-[40%] items-center'><Text className='font-bold text-lg'>تفاعل</Text></View>
           </View>
           <View className='h-0.5 bg-gray-500 w-full'></View>
    <ScrollView className='flex-1 overflow-scroll'>
           {filteredItems.map((record) => (
            
-            <View key={record.id} className='flex-1 flex-row gap-x-2 items-center justify-center max-h-9 my-1 '>
-              <View className='w-[20%] items-center'><Text className='text-center'>{record.name}</Text></View>
-              <View className='w-[20%] mx-2'><Text className='text-center'>{record.balance}</Text></View>
+            <View key={record.id} className='flex-1 flex-row  items-center justify-center max-h-9 my-1 '>
+              <View className='w-[30%] items-center'><Text className='text-center'>{record.name}</Text></View>
+              <View className='w-[30%] items-center'><Text className='text-center'>{record.balance}</Text></View>
+              <View className='flex-row w-[40%] justify-center gap-2'>
               <View >
                 <TouchableOpacity 
                   className='w-fit h-9 p-2 bg-[#FCa311] rounded-sm cursor-pointer'
                   onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
               </View>
-              <View>
+              {/* <View>
                 <TouchableOpacity className='w-fit max-w-fit h-9 bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)}>
                   <Text className='text-white font-bold'>Delete</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
               <View>
                 <TouchableOpacity 
                   className='w-fit h-9 p-2 bg-blue-500 rounded-sm'
@@ -137,6 +138,7 @@ const TradersComponent: React.FC = () => { // Updated component name
                   <Text className='text-white font-bold'>Details</Text>
                 </TouchableOpacity>
               </View>
+            </View>
             </View>
           ))}
           </ScrollView>

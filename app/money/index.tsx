@@ -73,7 +73,7 @@ const MoneyPage = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Money Management</Text>
+      <Text className='text-center font-bold p-3 text-4xl m-2'>إدارة الأموال</Text>
       
       <View style={styles.buttonContainer}>
         <Button
@@ -91,7 +91,7 @@ const MoneyPage = () => {
 
       <TextInput
         className="p-2 bg-gray-200 rounded-md border mb-3 "
-        placeholder="Amount"
+        placeholder="المبلغ"
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
@@ -102,7 +102,7 @@ const MoneyPage = () => {
           <Text
             className="p-2 bg-gray-200 rounded-md border mb-3 "
           >
-            {customerId ? customers.find(c => c.id === customerId)?.name : 'Select Customer ▼'} 
+            {customerId ? customers.find(c => c.id === customerId)?.name : '▼ اختر عميلاً '} 
           </Text>
         </TouchableWithoutFeedback>
       )}
@@ -112,14 +112,14 @@ const MoneyPage = () => {
           <Text
             className="p-2 bg-gray-200 rounded-md border mb-3 "
           >
-            {traderId ? traders.find(t => t.id === traderId)?.name : 'Select Trader ▼'}
+            {traderId ? traders.find(t => t.id === traderId)?.name : ' ▼ اختر تاجراً '}
           </Text>
         </TouchableWithoutFeedback>
       )}
 
       <TextInput
          className="p-2 bg-gray-200 rounded-md border mb-3 "
-        placeholder="Note"
+        placeholder="ملاحظات"
         value={note}
         onChangeText={setNote}
       />

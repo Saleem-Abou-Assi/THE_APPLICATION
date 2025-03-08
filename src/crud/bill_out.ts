@@ -1,5 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 
+interface DbItem {
+    id: number;
+    name: string;
+}
+
 // Function to initialize the bill
 export const initBillOut = async () => {
     const db = SQLite.openDatabaseSync('DataBase.sqlite');
@@ -57,7 +62,7 @@ export const createBillOut = async (billData: {
                     [item.name, item.b_price, item.s_price, 0]
                 );
                 // Get the newly created item's ID
-                const newItem = await db.getFirstAsync('SELECT id FROM items WHERE name = ?', [item.name]);
+                const newItem = await db.getFirstAsync('SELECT id FROM items WHERE name = ?', [item.name]) as DbItem;
                 item.itemId = newItem.id;
             }
 

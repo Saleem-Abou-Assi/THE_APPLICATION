@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { getCustomerDetails } from '../../src/crud/cutomers';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Print from 'expo-print';
@@ -12,6 +12,7 @@ export default function CustomerDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedBills, setExpandedBills] = useState<Record<number, boolean>>({});
+  const [printing, setPrinting] = useState(false);
 
   const toggleBill = (billId: number) => {
     setExpandedBills(prev => ({
@@ -21,60 +22,70 @@ export default function CustomerDetails() {
   };
 
   const printBill = async (bill: any) => {
-    const html = `
-      <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; }
-            .bill-container { max-width: 800px; margin: 0 auto; }
-            .bill-header { text-align: center; margin-bottom: 20px; }
-            .bill-details { margin-bottom: 20px; }
-            .bill-table { width: 100%; border-collapse: collapse; }
-            .bill-table th, .bill-table td { border: 1px solid #000; padding: 8px; text-align: center; }
-          </style>
-        </head>
-        <body>
-          <div class="bill-container">
-            <div class="bill-header">
-              <h1>فاتورة #${bill.id}</h1>
-              <p>تاريخ الإصدار: ${bill.created_at}</p>
-            </div>
-            <div class="bill-details">
-              <p>قيمة الفاتورة: ${bill.total_cost}</p>
-              <p>المدفوعات: ${bill.pay}</p>
-              <p>الرصيد السابق: ${bill.old_balance}</p>
-              <p>الرصيد الحالي: ${bill.new_balance}</p>
-            </div>
-            <table class="bill-table">
-              <thead>
-                <tr>
-                  <th>اسم المادة</th>
-                  <th>الكمية المباعة</th>
-                  <th>سعر المبيع</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${bill.items.map((item: any) => `
-                  <tr>
-                    <td>${item.name}</td>
-                    <td>${item.sold_quantity}</td>
-                    <td>${item.sold_price}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </body>
-      </html>
-    `;
-
     try {
+      const html = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; direction: rtl; }
+              .bill-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+              .bill-header { text-align: center; margin-bottom: 20px; }
+              .bill-details { margin-bottom: 20px; }
+              .bill-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              .bill-table th { background-color: #f2f2f2; }
+              .bill-table th, .bill-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+              .total-row { font-weight: bold; background-color: #f8f8f8; }
+            </style>
+          </head>
+          <body>
+            <div class="bill-container">
+              <div class="bill-header">
+                <h1>فاتورة #${bill.id}</h1>
+                <p>تاريخ الإصدار: ${bill.created_at}</p>
+              </div>
+              <div class="bill-details">
+                <p>العميل: ${customerData.customer.name}</p>
+                <p>قيمة الفاتورة: ${bill.total_cost}</p>
+                <p>المدفوعات: ${bill.pay}</p>
+                <p>الرصيد السابق: ${bill.old_balance}</p>
+                <p>الرصيد الحالي: ${bill.new_balance}</p>
+              </div>
+              <table class="bill-table">
+                <thead>
+                  <tr>
+                    <th>اسم المادة</th>
+                    <th>الكمية المباعة</th>
+                    <th>سعر المبيع</th>
+                    <th>المجموع</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${bill.items.map((item: any) => `
+                    <tr>
+                      <td>${item.name}</td>
+                      <td>${item.sold_quantity}</td>
+                      <td>${item.sold_price}</td>
+                      <td>${item.sold_quantity * item.sold_price}</td>
+                    </tr>
+                  `).join('')}
+                  <tr class="total-row">
+                    <td colspan="3">المجموع الكلي</td>
+                    <td>${bill.total_cost}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </body>
+        </html>
+      `;
+
       await Print.printAsync({
         html,
         orientation: 'portrait',
       });
     } catch (error) {
       console.error('Failed to print:', error);
+      alert('فشل في الطباعة. يرجى المحاولة مرة أخرى.');
     }
   };
 
@@ -189,9 +200,14 @@ export default function CustomerDetails() {
             </TouchableOpacity>
             <TouchableOpacity 
               onPress={() => printBill(bill)}
-              className='bg-blue-500 p-2 rounded mt-2'
+              className='bg-blue-500 p-2 rounded mt-2 flex-row justify-center items-center'
+              disabled={printing}
             >
-              <Text className='text-white text-center'>طباعة الفاتورة</Text>
+              {printing ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className='text-white text-center'>طباعة الفاتورة</Text>
+              )}
             </TouchableOpacity>
           </View>
         ))} 

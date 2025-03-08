@@ -163,7 +163,7 @@ const BillOutPage = () => {
 
         try {
             // Create new item object
-            const newItem = {
+            const newItem= {
                 id: Date.now(), // Temporary ID until saved to database
                 name: newItemName,
                 b_price: newItemBuyPrice,
@@ -282,31 +282,32 @@ const BillOutPage = () => {
                             <Text className='text-center font-bold'>Add Item</Text>
                         </TouchableOpacity>
 
-                        <View className='flex-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 gap-1'>
-                            <Text className='font-bold w-[37%] text-center'>المادة</Text>
+                        <View className='flex-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 '>
+                            <Text className='font-bold w-16 text-center'>المادة</Text>
                             <Text className='font-bold w-20 text-center'>الكمية</Text>
                             <Text className='font-bold w-20 text-center'>المبيع</Text>
+                            <Text className='font-bold w-20 text-center'>الشراء</Text>
                             <Text className='font-bold w-20 text-center'>المجموع</Text>
                         </View>   
 
                         {selectedItems.map((item, index) => (
                             <View key={index} className='felx-1 flex-col items-center'>
-                                <View className='flex-row items-center gap-2 mb-4'>
-                                    <View className='flex-1'>
+                                <View className='flex-row items-center gap-1 mb-4'>
+                                    <View className='flex-1 '>
                                         <TouchableOpacity
-                                            className='bg-gray-200 p-2 rounded-md'
+                                            className='bg-gray-200 p-2 rounded-md '
                                             onPress={() => {
                                                 setSelectedItemIndex(index);
                                                 setItemModalVisible(true);
                                             }}
                                         >
                                             <Text className='text-center'>
-                                                {item.name || "Select Item"}
+                                                {item.name || "المادة"}
                                             </Text>
                                         </TouchableOpacity>
                                     </View>
                                     <TextInput
-                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-16 text-center"
+                                        className="bg-gray-200 p-2 rounded-md flex-1 max-w-14 text-center"
                                         keyboardType="numeric"
                                         value={item.quantity.toString()}
                                         onChangeText={(value) => updateItem(index, 'quantity', Number(value))}
@@ -411,6 +412,7 @@ const BillOutPage = () => {
                             onRequestClose={() => setItemModalVisible(false)}
                         >
                             <TouchableWithoutFeedback onPress={() => setItemModalVisible(false)}>
+                                <ScrollView>
                                 <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
                                     <View className='bg-white rounded-lg p-4 shadow-lg w-[85%]'>
                                         <TextInput
@@ -423,31 +425,40 @@ const BillOutPage = () => {
                                         {/* New Item Creation Fields */}
                                         <View className='mb-4'>
                                             <Text className='font-bold mb-2'>Create New Item:</Text>
+                                            <View className='flex-row w-full items-center'>
                                             <TextInput
-                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                className="bg-gray-200 p-2 rounded-md mb-2 w-[75%] text-center"
                                                 placeholder="Item Name"
                                                 value={newItemName}
                                                 onChangeText={setNewItemName}
                                             />
+                                                <Text className='text-center w-[25%] font-bold'>اسم المادة</Text>
+                                            </View>
+                                            <View className='flex-row w-full items-center'>
                                             <TextInput
-                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                className="bg-gray-200 p-2 rounded-md mb-2 w-[75%] text-center"
                                                 placeholder="Buying Price"
                                                 keyboardType="numeric"
                                                 value={newItemBuyPrice.toString()}
                                                 onChangeText={(value) => setNewItemBuyPrice(Number(value))}
                                             />
+                                                <Text className='text-center w-[25%] font-bold'>سعر الشراء:</Text>
+                                            </View>
+                                            <View className='flex-row w-full items-center'>
                                             <TextInput
-                                                className="bg-gray-200 p-2 rounded-md mb-2"
+                                                className="bg-gray-200 p-2 rounded-md mb-2 w-[75%] text-center"
                                                 placeholder="Selling Price"
                                                 keyboardType="numeric"
                                                 value={newItemSellPrice.toString()}
                                                 onChangeText={(value) => setNewItemSellPrice(Number(value))}
                                             />
+                                                <Text className='text-center w-[25%] font-bold'>سعر المبيع:</Text>
+                                            </View>
                                             <TouchableOpacity
                                                 className='bg-green-500 p-2 rounded-md'
                                                 onPress={handleCreateAndAddItem}
                                             >
-                                                <Text className='text-white text-center'>Create & Add Item</Text>
+                                                <Text className='text-white text-center'>اضف مادة جديدة</Text>
                                             </TouchableOpacity>
                                         </View>
                                         
@@ -473,6 +484,7 @@ const BillOutPage = () => {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
+                                </ScrollView>
                             </TouchableWithoutFeedback>
                         </Modal>
             </KeyboardAvoidingView>
