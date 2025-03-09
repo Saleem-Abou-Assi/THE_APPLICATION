@@ -44,14 +44,28 @@ export const useSecurityCheck = () => {
 
   const SecurityModal = () => (
     <Modal
-      transparent={true}
+      transparent={false}
       visible={showModal}
-      animationType="slide"
+      animationType="fade"
       onRequestClose={() => {
         Alert.alert('Verification Required', 'You must verify to use the app.');
       }}
     >
-      {/* ... rest of modal JSX ... */}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+          <Text>Enter Passcode</Text>
+          <TextInput
+            secureTextEntry={true}
+            placeholder="Passcode"
+            value={passcode}
+            onChangeText={setPasscode}
+            style={{ borderWidth: 1, padding: 10, marginVertical: 10, borderRadius: 5 }}
+          />
+          <TouchableOpacity onPress={handleVerification} style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, alignItems: 'center' }}>
+            <Text style={{ color: 'white' }}>Verify</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   );
 
