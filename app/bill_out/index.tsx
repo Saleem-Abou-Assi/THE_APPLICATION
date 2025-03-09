@@ -172,7 +172,7 @@ const BillOutPage = () => {
             };
 
             // Add to items list
-            setItems([...items, newItem]);
+            // setItems([...items, newItem]);
 
             // Add to selected items
             if (selectedItemIndex !== null) {
