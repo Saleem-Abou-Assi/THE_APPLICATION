@@ -27,7 +27,7 @@ export default function App() {
     <ScrollView>
       <View style={styles.container}>  
         <View style={styles.header}>  
-          <Text style={styles.headerText}>App Name</Text>  
+          <Text style={styles.headerText}>مندوب</Text>  
         </View>  
         
         <View style={styles.box}>  

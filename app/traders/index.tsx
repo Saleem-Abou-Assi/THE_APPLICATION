@@ -76,10 +76,10 @@ const TradersComponent: React.FC = () => { // Updated component name
   return (
     
       <View className='flex-1 w-[100%] items-center'>
-        <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
+        <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <View className='flex-row-reverse items-center '>
             <Text className='text-center font-bold w-20'>الاسم:</Text>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} className='w-[80%] bg-gray-100 rounded-lg ' />
+          <TextInput placeholder="Name" value={name} onChangeText={setName} className='w-[80%] h-12 bg-gray-100 rounded-lg ' />
           </View>
           <View className='flex-row-reverse items-center'>
           <Text className='text-center font-bold w-20'>الرصيد:</Text>
@@ -88,17 +88,17 @@ const TradersComponent: React.FC = () => { // Updated component name
             value={String(balance)} 
             onChangeText={text => setBalance(Number(text))} 
             keyboardType="numeric" 
-            className='w-[80%] bg-gray-100 rounded-lg '
+            className='w-[80%] h-12 bg-gray-100 rounded-lg '
           />
           </View>
           <Button title={editingId ? "عدّل" : "أنشئ"} onPress={handleCreateOrUpdate} />
         </View>
 
-        <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
+        <View className='w-[100%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className=''>
             <TextInput
-              className="bg-gray-200 p-2 rounded-md mb-4"
-              placeholder="Search items..."
+              className="bg-gray-200 p-2 rounded-md mb-4 h-12"
+              placeholder="ابحث عن تاجر..."
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -119,7 +119,7 @@ const TradersComponent: React.FC = () => { // Updated component name
               <View >
                 <TouchableOpacity 
                   className='w-fit h-9 p-2 bg-[#FCa311] rounded-sm cursor-pointer'
-                  onPress={() => handleEdit(record)}><Text>Edit</Text></TouchableOpacity>
+                  onPress={() => handleEdit(record)}><Text>عدّل</Text></TouchableOpacity>
               </View>
               {/* <View>
                 <TouchableOpacity className='w-fit max-w-fit h-9 bg-red-700 p-2 rounded-sm' onPress={() => handleDelete(record.id)}>
@@ -135,7 +135,7 @@ const TradersComponent: React.FC = () => { // Updated component name
                       params: { traderId : record.id }
                     });
                   }}>
-                  <Text className='text-white font-bold'>Details</Text>
+                  <Text className='text-white font-bold'>التفاصيل</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -33,7 +33,7 @@ const Items: React.FC = () => {
 
   const handleCreateOrUpdate = async () => {
     // Check if all fields are filled
-    if (!name || b_price <= 0 || s_price <= 0 || quantity <= 0) {
+    if (!name || b_price <= 0 || s_price <= 0 ) {
       Alert.alert("الرجاء ملئ جميع الحقول.");
       return;
     }
@@ -95,7 +95,7 @@ const Items: React.FC = () => {
         <View className='w-[100%] bg-white shadow-slate-700 p-3 m-5 grid grid-rows-5 gap-y-3 rounded-lg'>
           <View className='flex-1 flex-row-reverse w-full items-center p-1 justify-center'>
             <Text className='font-bold w-20 text-end'>اسم المنتج:</Text>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} className='bg-gray-100 w-[80%] rounded-md'/>
+          <TextInput placeholder="Name" value={name} onChangeText={setName} className='bg-gray-100 h-12 w-[80%] rounded-md'/>
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
           <Text className='font-bold w-20 text-center'> سعر الشراء:</Text>
@@ -104,7 +104,7 @@ const Items: React.FC = () => {
             value={String(b_price)} 
             onChangeText={text => setBPrice(Number(text))} 
             keyboardType="numeric" 
-            className='bg-gray-100 w-[80%] rounded-md'
+            className='bg-gray-100 w-[80%] rounded-md h-12'
           />
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
@@ -114,7 +114,7 @@ const Items: React.FC = () => {
             value={String(s_price)} 
             onChangeText={text => setSPrice(Number(text))} 
             keyboardType="numeric" 
-            className='bg-gray-100 w-[80%] rounded-md'
+            className='bg-gray-100 w-[80%] rounded-md h-12'
           />
           </View>
           <View className='flex-1 flex-row-reverse w-full items-center p-1'>
@@ -124,7 +124,7 @@ const Items: React.FC = () => {
             value={String(quantity)} 
             onChangeText={text => setQuantity(Number(text))} 
             keyboardType="numeric" 
-            className='bg-gray-100 w-[80%] rounded-md'
+            className='bg-gray-100 w-[80%] rounded-md h-12'
           />
           </View>
           <Button title={editingId ? "عدّل" : "أنشئ"} onPress={handleCreateOrUpdate} />
@@ -133,7 +133,7 @@ const Items: React.FC = () => {
         <View className='w-[100%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className='p-2 '>
             <TextInput
-              className="bg-gray-200 p-2 rounded-md "
+              className="bg-gray-200 p-2 rounded-md h-12"
               placeholder="Search items..."
               value={searchTerm}
               onChangeText={setSearchTerm}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView,TextInput, Platform, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView,TextInput, Platform, Modal, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import * as Print from 'expo-print';
 
 import { initBill, createBill } from '../../src/crud/bill_in';
 import { Customer } from '@/src/entity/Customers';
@@ -64,6 +65,9 @@ const BillInPage = () => {
         item.name.toLowerCase().includes(itemSearchQuery.toLowerCase())
     );
 
+    // Add printing state with other states
+    const [printing, setPrinting] = useState(false);
+
     // Effect to focus on the TextInput when the modal opens
     useEffect(() => {
         if (modalVisible) {
@@ -115,60 +119,142 @@ const BillInPage = () => {
         return { totalCost, oldBalance, newBalance };
     };
 
-    const handleSubmit = async () => {
-        // Check item quantities
-        let hasInsufficientStock = false;
-        const insufficientItems: string[] = [];
+    // Add the printBill function
+    const printBill = async (billData: BillData) => {
+        try {
+            const html = `
+                <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; direction: rtl; }
+                            .bill-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                            .bill-header { text-align: center; margin-bottom: 20px; }
+                            .bill-details { margin-bottom: 20px; }
+                            .bill-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            .bill-table th { background-color: #f2f2f2; }
+                            .bill-table th, .bill-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+                            .total-row { font-weight: bold; background-color: #f8f8f8; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="bill-container">
+                            <div class="bill-header">
+                                <h1>فاتورة مبيع #${billData.bill_in_id}</h1>
+                                <p>تاريخ الإصدار: ${new Date().toLocaleDateString('ar')}</p>
+                            </div>
+                            <div class="bill-details">
+                                <p>العميل: ${selectedCustomer?.name || ''}</p>
+                                <p>الخط: ${selectedCustomer?.line || ''}</p>
+                                <p>قيمة الفاتورة: ${billData.total_cost}</p>
+                                <p>المدفوعات: ${billData.pay}</p>
+                                <p>الرصيد السابق: ${billData.old_balance}</p>
+                                <p>الرصيد الحالي: ${billData.new_balance}</p>
+                            </div>
+                            <table class="bill-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المادة</th>
+                                        <th>الكمية</th>
+                                        <th>سعر المبيع</th>
+                                        <th>المجموع</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${billData.items_array.map(item => {
+                                        const itemDetails = items.find(i => i.id === item.itemId);
+                                        const itemTotal = item.quantity * item.price;
+                                        return `
+                                            <tr>
+                                                <td>${itemDetails?.name || ''}</td>
+                                                <td>${item.quantity}</td>
+                                                <td>${item.price}</td>
+                                                <td>${itemTotal}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                    <tr class="total-row">
+                                        <td colspan="3">المجموع الكلي</td>
+                                        <td>${billData.total_cost}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                </html>
+            `;
 
-        for (const selectedItem of selectedItems) {
-            const item = items.find(i => i.id === selectedItem.itemId);
-            if (item && selectedItem.quantity > item.quantity) {
-                hasInsufficientStock = true;
-                insufficientItems.push(item.name);
-            }
+            await Print.printAsync({
+                html,
+                orientation: 'portrait',
+            });
+        } catch (error) {
+            console.error('Failed to print:', error);
+            alert('فشل في الطباعة. يرجى المحاولة مرة أخرى.');
         }
-
-        if (hasInsufficientStock) {
-            alert(`كمية غير متوفرة: ${insufficientItems.join(', ')}`);
-            return;
-        }
-
-        // Proceed with bill creation if all quantities are valid
-        const { totalCost, oldBalance, newBalance } = calculateTotals();
-        
-        // Ensure items have correct prices
-        const itemsWithPrices = selectedItems.map(item => {
-            const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
-            return {
-                ...item,
-                price: itemPrice
-            };
-        });
-
-        const billData = {
-            bill_in_id: Date.now(),
-            customer_id: selectedCustomerId,
-            items_array: itemsWithPrices,
-            pay: payment,
-            total_cost: totalCost,
-            old_balance: oldBalance,
-            new_balance: newBalance
-        };
-
-        await handleCreateBill(billData);
     };
 
-    // Handle bill submission
-    const handleCreateBill = async (billData: BillData) => {
+    // Update the handleSubmit function
+    const handleSubmit = async () => {
+        setPrinting(true);
         try {
+            // Check item quantities
+            let hasInsufficientStock = false;
+            const insufficientItems: string[] = [];
+
+            for (const selectedItem of selectedItems) {
+                const item = items.find(i => i.id === selectedItem.itemId);
+                if (item && selectedItem.quantity > item.quantity) {
+                    hasInsufficientStock = true;
+                    insufficientItems.push(item.name);
+                }
+            }
+
+            if (hasInsufficientStock) {
+                alert(`كمية غير متوفرة: ${insufficientItems.join(', ')}`);
+                return;
+            }
+
+            const { totalCost, oldBalance, newBalance } = calculateTotals();
+            
+            const itemsWithPrices = selectedItems.map(item => {
+                const itemPrice = item.price > 0 ? item.price : (items.find(i => i.id === item.itemId)?.s_price || 0);
+                return {
+                    ...item,
+                    price: itemPrice
+                };
+            });
+
+            const billData = {
+                bill_in_id: Date.now(),
+                customer_id: selectedCustomerId,
+                items_array: itemsWithPrices,
+                pay: payment,
+                total_cost: totalCost,
+                old_balance: oldBalance,
+                new_balance: newBalance
+            };
+
             const result = await createBill(billData);
             if (result.success) {
-                alert('Bill created successfully!');
-                // You might want to navigate to another page or reset the form
+                try {
+                    await printBill(billData);
+                    alert('تم إنشاء وطباعة الفاتورة بنجاح!');
+                    // Reset form after successful creation
+                    setSelectedItems([]);
+                    setPayment(0);
+                    setDiscount(0);
+                    setSelectedCustomer(null);
+                    setSelectedCustomerId(0);
+                } catch (printError) {
+                    console.error('Error printing bill:', printError);
+                    alert('تم إنشاء الفاتورة بنجاح، لكن فشلت الطباعة. يرجى المحاولة مرة أخرى.');
+                }
             }
         } catch (error) {
             console.error('Error creating bill:', error);
-            alert('Failed to create bill');
+            alert('فشل في إنشاء الفاتورة');
+        } finally {
+            setPrinting(false);
         }
     };
 
@@ -178,11 +264,7 @@ const BillInPage = () => {
 
     return (
         <ScrollView className='flex-1 w-full overflow-y-scroll'>
-        <KeyboardAvoidingView 
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={100}
-        >
+        
             <View className='flex-1 w-[100%] items-center'>
                 <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 rounded-lg'>
                     <Text className='text-2xl font-bold mb-4 text-center'>فاتورة مبيع</Text>
@@ -243,7 +325,7 @@ const BillInPage = () => {
                         className='w-32 self-center bg-[#FCa311] p-2 rounded-md mb-4'
                         onPress={addItemToBill}
                     >
-                        <Text className='text-center font-bold'>Add Item</Text>
+                        <Text className='text-center font-bold'>اضف منتج</Text>
                     </TouchableOpacity>
                     <View className='h-0.5 bg-gray-300 w-full mb-3'></View>
                     <View className='felx-1 flex-row items-center w-full bg-gray-100 p-2 mb-1 gap-1'>
@@ -362,9 +444,13 @@ const BillInPage = () => {
                     <TouchableOpacity
                         className='w-full bg-blue-500 p-2 rounded-md'
                         onPress={handleSubmit}
-                        disabled={!selectedCustomerId || selectedItems.length === 0}
+                        disabled={!selectedCustomerId || selectedItems.length === 0 || printing}
                     >
-                        <Text className='text-center text-white font-bold'>Create Bill</Text>
+                        {printing ? (
+                            <ActivityIndicator color="white" />
+                        ) : (
+                            <Text className='text-center text-white font-bold'>انشئ فاتورة</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -409,7 +495,7 @@ const BillInPage = () => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-        </KeyboardAvoidingView>
+        
         </ScrollView>
     );
 };

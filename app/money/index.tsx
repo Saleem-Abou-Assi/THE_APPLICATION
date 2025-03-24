@@ -77,13 +77,13 @@ const MoneyPage = () => {
       
       <View style={styles.buttonContainer}>
         <Button
-          title="Income"
+          title="   قبض   "
           onPress={() => setType('income')}
           color={type === 'income' ? 'green' : 'gray'}
         />
         <View style={styles.buttonSpacer} />
         <Button
-          title="Payment"
+          title="    دفع    "
           onPress={() => setType('payment')}
           color={type === 'payment' ? 'red' : 'gray'}
         />
@@ -124,7 +124,7 @@ const MoneyPage = () => {
         onChangeText={setNote}
       />
 
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button title="أدخل" onPress={handleSubmit} />
 
       <Modal
         animationType="fade"

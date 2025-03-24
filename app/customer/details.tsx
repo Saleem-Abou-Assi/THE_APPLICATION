@@ -163,20 +163,21 @@ export default function CustomerDetails() {
                 <Text className='font-bold w-[50%] text-center p-2'>قيمة الفاتورة:</Text>
                 <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.total_cost}</Text>
               </View>
-              <View className='flex-1 flex-row-reverse w-full '>
-                <Text className='font-bold w-[50%] text-center p-2'>المدفوعات:</Text>
-                <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.pay}</Text>
-              </View>
+               {expandedBills[bill.id] && (
+                <View>
               <View className='flex-1 flex-row-reverse w-full '>
                 <Text className='font-bold w-[50%] text-center p-2'>الرصيد السابق:</Text>
                 <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.old_balance}</Text>
               </View>
               <View className='flex-1 flex-row-reverse w-full '>
+                <Text className=' bg-red-50 font-bold w-[50%] text-center p-2'>المدفوعات:</Text>
+                <Text className='bg-red-100 font-bold w-[50%] text-center p-2'>{bill.pay}</Text>
+              </View>
+              <View className='flex-1 flex-row-reverse w-full '>
                 <Text className='font-bold w-[50%] text-center p-2'>الرصيد الحالي:</Text>
                 <Text className='bg-gray-100 font-bold w-[50%] text-center p-2'>{bill.new_balance}</Text>
               </View>
-              {expandedBills[bill.id] && (
-                <View>
+             
                   <View className='w-full h-0.5 bg-gray-200 mt-1'></View>
                   <Text className='font-bold w-full text-center p-2'>محتويات الفاتورة:</Text>
                   <View className='flex-1 flex-row w-full bg-gray-100'>

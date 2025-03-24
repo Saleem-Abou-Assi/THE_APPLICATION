@@ -83,15 +83,16 @@ useEffect(() => {
 
   return (
    
-      <View className='flex-1 w-[100%] items-center'>
-        <View className='w-[95%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
+      <ScrollView className='flex-1 w-[100%] '>
+        <View className='flex-1 w-[100%] flex-col items-center'>
+        <View className='w-[100%] bg-white shadow-slate-700 p-2 m-5 grid grid-rows-4 gap-y-3 rounded-lg'>
           <View className='flex-row-reverse items-center'>
             <Text className='w-20 text-center font-bold '>الاسم:</Text>
-          <TextInput placeholder="Name" value={name} onChangeText={setName} className='w-[80%] bg-gray-100 rounded-lg'/>
+          <TextInput placeholder="Name" value={name} onChangeText={setName} className='w-[80%] bg-gray-100 rounded-lg h-12'/>
           </View>
           <View className='flex-row-reverse items-center'>
             <Text className='font-bold text-center w-20'>الخط:</Text>
-          <TextInput placeholder="Line" value={line} onChangeText={setLine} className='w-[80%] bg-gray-100 rounded-lg'/>
+          <TextInput placeholder="Line" value={line} onChangeText={setLine} className='w-[80%] bg-gray-100 rounded-lg h-12'/>
           </View>
           <View className='flex-row-reverse items-center'>
               <Text className='font-bold text-center w-20'>الرصيد:</Text>
@@ -100,18 +101,18 @@ useEffect(() => {
             value={String(balance)} 
             onChangeText={text => setBalance(Number(text))} 
             keyboardType="numeric" 
-            className='w-[80%] bg-gray-100 rounded-lg'
+            className='w-[80%] bg-gray-100 rounded-lg h-12'
           />
           </View>
-          <Button title={editingId ? "Update Record" : "Create Record"} onPress={handleCreateOrUpdate} />
+          <Button title={editingId ? "Update Record" : "انشئ "} onPress={handleCreateOrUpdate} />
         </View>
         
-            <KeyboardAvoidingView keyboardVerticalOffset={100}
-            behavior="padding" className='flex-1 w-full items-center'>
-        <View className='w-[95%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
+            
+           
+        <View className='w-[100%] flex-1 flex-col gap-y-3 bg-white rounded-lg h-fit'>
           <View className=''>
             <TextInput
-              className="bg-gray-200 p-2 rounded-md mb-4"
+              className="bg-gray-200 p-2 rounded-md mb-4 h-12"
               placeholder="ابحث عن اسم..."
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -158,8 +159,8 @@ useEffect(() => {
           ))}
           </ScrollView>
         </View>
-          </KeyboardAvoidingView>
-      </View>
+         </View>
+      </ScrollView>
    
   );
 };
